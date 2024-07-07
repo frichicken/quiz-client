@@ -1,4 +1,5 @@
-import Button from 'components/Button';
+import Button from 'components/common/Button';
+import { Link } from 'react-router-dom';
 
 function Login() {
     return (
@@ -35,10 +36,15 @@ function Login() {
                             </label>
                             <a className="text-blue-300 underline cursor-pointer">You forgot?</a>
                         </div>
-                        <Button className="bg-orange-200">Buzz</Button>
-                        <a className="text-blue-300 underline cursor-pointer w-full text-center">
+                        <Link to="/quizzes">
+                            <Button className="bg-orange-200 w-full">Buzz</Button>
+                        </Link>
+                        <Link
+                            to="/sign-up"
+                            className="text-blue-300 underline cursor-pointer w-full text-center"
+                        >
                             Give me a sign
-                        </a>
+                        </Link>
                     </fieldset>
                 </form>
             </div>

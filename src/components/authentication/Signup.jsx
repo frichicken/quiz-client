@@ -1,4 +1,5 @@
-import Button from 'components/Button';
+import Button from 'components/common/Button';
+import { Link } from 'react-router-dom';
 
 const Signup = () => {
     return (
@@ -37,9 +38,12 @@ const Signup = () => {
                             <Button className="bg-red-200">Voilà</Button>
                         </label>
                         <Button className="bg-orange-200">Woody</Button>
-                        <a className="text-blue-300 underline cursor-pointer w-full text-center">
+                        <Link
+                            to="/log-in"
+                            className="text-blue-300 underline cursor-pointer w-full text-center"
+                        >
                             Can&apos;t believe that you already have it?
-                        </a>
+                        </Link>
                     </fieldset>
                 </form>
             </div>

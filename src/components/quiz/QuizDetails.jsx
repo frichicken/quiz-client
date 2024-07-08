@@ -8,8 +8,15 @@ const QuizDetails = () => {
     const { title, description, questions } = quiz;
 
     return (
-        <div className="w-full h-full flex flex-col gap-4 border border-solid border-black p-2 overflow-y-auto">
-            <Link to="/quizzes" className="text-blue-300 underline cursor-pointer">
+        <div className="w-full h-full flex flex-col gap-4 border border-solid border-black p-4 overflow-y-auto">
+            <Link
+                onClick={event => {
+                    event.preventDefault();
+                    history.back();
+                }}
+                to="/quizzes"
+                className="text-blue-300 underline cursor-pointer"
+            >
                 Back?
             </Link>
             <div className="flex items-center justify-between">
@@ -20,6 +27,9 @@ const QuizDetails = () => {
                 <div className="flex items-center gap-2">
                     <Link to={'/quizzes/' + quizId + '/play'}>
                         <Button>Play</Button>
+                    </Link>
+                    <Link to={'/quizzes/' + quizId + '/edit'}>
+                        <Button>Edit</Button>
                     </Link>
                     <Button>Please forgive me</Button>
                 </div>

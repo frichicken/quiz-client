@@ -9,7 +9,9 @@ function Layout() {
                     <div className="w-[32px] h-[32px] border border-solid border-black rounded-full overflow-hidden">
                         <img className="w-full h-full object-cover" />
                     </div>
-                    <Button to="settings">Settings</Button>
+                    <Link to="/settings">
+                        <Button>Settings</Button>
+                    </Link>
                     <Link to="/log-in">
                         <Button>Log out</Button>
                     </Link>

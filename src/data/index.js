@@ -2,7 +2,7 @@ import { getRandomDate, getRandomString } from 'utils';
 
 export const quizzes = [
     {
-        id: getRandomString(),
+        id: 1,
         title: 'You know what?',
         description: 'They are just silly questions',
         createdAt: getRandomDate(),
@@ -30,7 +30,7 @@ export const quizzes = [
         ]
     },
     {
-        id: getRandomString(),
+        id: 2,
         title: 'Friends',
         description: 'A challenge to know your friends better',
         createdAt: getRandomDate(),
@@ -56,5 +56,22 @@ export const quizzes = [
                 isOpen: true
             }
         ]
+    }
+];
+
+export const collections = [
+    {
+        id: getRandomString(),
+        title: 'Hot toys',
+        description: 'Hot toy collections',
+        quizIds: [1, 2],
+        createdAt: getRandomDate()
+    },
+    {
+        id: getRandomString(),
+        title: 'Dune',
+        description: 'This all about Zendaya',
+        quizIds: [1],
+        createdAt: getRandomDate()
     }
 ];

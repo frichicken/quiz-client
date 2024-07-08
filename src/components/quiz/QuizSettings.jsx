@@ -16,7 +16,13 @@ const QuizSettings = () => {
                 <h2>{quizId ? 'Do whatever you want to this quiz' : 'Yes, another quiz'}</h2>
                 <div className="flex items-center gap-2">
                     <Button className="bg-amber-300">Heck yes</Button>
-                    <Link to="/quizzes">
+                    <Link
+                        to="/quizzes"
+                        onClick={event => {
+                            event.preventDefault();
+                            history.back();
+                        }}
+                    >
                         <Button className="bg-indigo-300">Deny</Button>
                     </Link>
                     {quizId && <Button className="bg-red-100">Let&apos;s say goodbye</Button>}
@@ -36,7 +42,7 @@ const QuizSettings = () => {
                     </label>
                     <label className="flex flex-col gap-2">
                         Description:
-                        <input
+                        <textarea
                             className="border border-solid border-black outline-none px-4 py-2"
                             name="description"
                             placeholder="Give it some descriptive words"

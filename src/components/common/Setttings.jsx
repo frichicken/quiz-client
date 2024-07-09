@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Button from './common/Button';
+import Button from './Button';
 
 const Tabs = {
     Information: 1,

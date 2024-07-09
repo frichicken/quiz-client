@@ -1,21 +1,49 @@
 import Button from 'components/common/Button';
 import { quizzes } from 'data';
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 const QuizSettings = () => {
     const { quizId } = useParams();
-    let quiz = { title: '', description: '', questions: [] };
+    const [quiz, setQuiz] = useState({
+        title: '',
+        description: ''
+    });
+    const [questions, setQuestions] = useState([]);
 
-    if (quizId) quiz = quizzes.find(quiz => quiz.id == quizId);
+    const handleChange = event => {
+        const { name, value } = event.target;
 
-    const { title, description, questions } = quiz;
+        setQuiz({
+            ...quiz,
+            [name]: value
+        });
+    };
+
+    const handleCreateQuiz = () => {
+        fetch('http://localhost:5184/api/quizzes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json'
+            },
+            body: JSON.stringify({
+                ...quiz,
+                accountId: 1
+            })
+        }).then(response => {
+            console.log({ response });
+        });
+    };
 
     return (
         <div className="flex-1 border border-solid border-black p-4 overflow-y-auto">
             <div className="flex items-center justify-between">
                 <h2>{quizId ? 'Do whatever you want to this quiz' : 'Yes, another quiz'}</h2>
                 <div className="flex items-center gap-2">
-                    <Button className="bg-amber-300">Heck yes</Button>
+                    <Button className="bg-amber-300" onClick={handleCreateQuiz}>
+                        Heck yes
+                    </Button>
                     <Link
                         to="/quizzes"
                         onClick={event => {
@@ -37,7 +65,8 @@ const QuizSettings = () => {
                             className="border border-solid border-black outline-none px-4 py-2"
                             name="title"
                             placeholder="Titled this quiz, please"
-                            value={title}
+                            value={quiz.title}
+                            onChange={handleChange}
                         />
                     </label>
                     <label className="flex flex-col gap-2">
@@ -46,7 +75,8 @@ const QuizSettings = () => {
                             className="border border-solid border-black outline-none px-4 py-2"
                             name="description"
                             placeholder="Give it some descriptive words"
-                            value={description}
+                            value={quiz.description}
+                            onChange={handleChange}
                         />
                     </label>
                 </fieldset>

@@ -10,23 +10,49 @@ import QuizPlayground from 'components/quiz/QuizPlayground';
 import QuizSettings from 'components/quiz/QuizSettings';
 import Quizzes from 'components/quiz/Quizzes';
 import QuizzLayout from 'components/quiz/QuizzLayout';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import './index.css';
-import Setttings from 'components/Setttings';
+import Setttings from 'components/common/Setttings';
+
+const AuthenticationWrapper = ({ children, isAuthenticationPage = false }) => {
+    const account = JSON.parse(localStorage.getItem('account'));
+
+    if (isAuthenticationPage) {
+        if (account) return <Navigate to="/quizzes" />;
+
+        return children;
+    } else {
+        if (account) return children;
+
+        return <Navigate to="/log-in" />;
+    }
+};
 
 function App() {
     const router = createBrowserRouter([
         {
             path: '/log-in',
-            element: <Login />
+            element: (
+                <AuthenticationWrapper isAuthenticationPage>
+                    <Login />
+                </AuthenticationWrapper>
+            )
         },
         {
             path: '/sign-up',
-            element: <Signup />
+            element: (
+                <AuthenticationWrapper isAuthenticationPage>
+                    <Signup />
+                </AuthenticationWrapper>
+            )
         },
         {
             path: '/',
-            element: <Layout />,
+            element: (
+                <AuthenticationWrapper>
+                    <Layout />
+                </AuthenticationWrapper>
+            ),
             children: [
                 {
                     path: '/quizzes',

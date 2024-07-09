@@ -1,9 +1,28 @@
 import Button from 'components/common/Button';
-import { quizzes } from 'data';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FetchStatuses } from 'utils/constants';
 
 function Quizzes() {
     const navigate = useNavigate();
+    const [quizzes, setQuizzes] = useState([]);
+    const [fetchStatus, setFetchStatus] = useState(FetchStatuses.None);
+
+    useEffect(() => {
+        setFetchStatus(FetchStatuses.Loading);
+        fetch('http://localhost:5184/api/quizzes')
+            .then(response => response.json())
+            .then(data => setQuizzes(data))
+            .catch(error => console.error(error))
+            .finally(() => setFetchStatus(FetchStatuses.None));
+    }, []);
+
+    if (fetchStatus == FetchStatuses.Loading)
+        return (
+            <div className="w-full h-full flex justify-center items-center border border-solid border-black p-2">
+                Spining...
+            </div>
+        );
 
     return (
         <div className="w-full h-full flex flex-col gap-2 border border-solid border-black p-2 overflow-y-auto">

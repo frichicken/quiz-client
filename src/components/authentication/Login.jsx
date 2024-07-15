@@ -75,7 +75,7 @@ function Login() {
                 .then(data => {
                     console.log({ data });
                     localStorage.setItem('account', JSON.stringify(data));
-                    navigate('/quizzes');
+                    navigate(`/accounts/${data.id}/quizzes`);
                 })
                 .catch(response => console.log(response))
                 .finally(() => setFetchStatus(FetchStatuses.None));

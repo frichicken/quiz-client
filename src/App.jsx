@@ -5,6 +5,7 @@ import CollectionLayout from 'components/collection/CollectionLayout';
 import Collections from 'components/collection/Collections';
 import CollectionSettings from 'components/collection/CollectionSettings';
 import Layout from 'components/common/Layout';
+import Setttings from 'components/common/Setttings';
 import QuizDetails from 'components/quiz/QuizDetails';
 import QuizPlayground from 'components/quiz/QuizPlayground';
 import QuizSettings from 'components/quiz/QuizSettings';
@@ -12,13 +13,12 @@ import Quizzes from 'components/quiz/Quizzes';
 import QuizzLayout from 'components/quiz/QuizzLayout';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import './index.css';
-import Setttings from 'components/common/Setttings';
 
 const AuthenticationWrapper = ({ children, isAuthenticationPage = false }) => {
     const account = JSON.parse(localStorage.getItem('account'));
 
     if (isAuthenticationPage) {
-        if (account) return <Navigate to="/quizzes" />;
+        if (account) return <Navigate to={`/accounts/${account.id}/quizzes`} />;
 
         return children;
     } else {
@@ -55,28 +55,26 @@ function App() {
             ),
             children: [
                 {
-                    path: '/quizzes',
+                    path: 'accounts/:accountId/quizzes',
                     element: <QuizzLayout />,
                     children: [
                         { index: true, element: <Quizzes /> },
                         { path: ':quizId', element: <QuizDetails /> },
                         { path: ':quizId/play', element: <QuizPlayground /> },
-                        { path: ':quizId/edit', element: <QuizSettings /> },
-                        { path: 'create', element: <QuizSettings /> }
+                        { path: ':quizId/edit', element: <QuizSettings /> }
                     ]
                 },
                 {
-                    path: '/collections',
+                    path: 'accounts/:accountId/collections',
                     element: <CollectionLayout />,
                     children: [
                         { index: true, element: <Collections /> },
                         { path: ':collectionId', element: <CollectionDetails /> },
-                        { path: ':collectionId/edit', element: <CollectionSettings /> },
-                        { path: 'create', element: <CollectionSettings /> }
+                        { path: ':collectionId/edit', element: <CollectionSettings /> }
                     ]
                 },
                 {
-                    path: '/settings',
+                    path: 'settings',
                     element: <Setttings />
                 }
             ]

@@ -2,6 +2,8 @@ import { Link, Outlet } from 'react-router-dom';
 import Button from './Button';
 
 function Layout() {
+    const account = JSON.parse(localStorage.getItem('account'));
+
     return (
         <div className="w-full h-screen flex flex-col">
             <nav className="p-4 flex justify-between items-center border-b border-b-black">
@@ -16,7 +18,7 @@ function Layout() {
                         to="/log-in"
                         onClick={() => localStorage.setItem('account', JSON.stringify(null))}
                     >
-                        <Button className="bg-slate-300">Log out</Button>
+                        <Button className="bg-green-200">Log out</Button>
                     </Link>
                     <Button to="/terms-and-policies" className="bg-orange-200">
                         Terms and policies
@@ -24,12 +26,12 @@ function Layout() {
                 </div>
                 <ul className="flex items-center gap-4 list-none">
                     <li>
-                        <Link to="/quizzes">
-                            <Button className="bg-zinc-300">Home</Button>
+                        <Link to={`/accounts/${account.id}/quizzes`}>
+                            <Button className="bg-amber-100">Quizzes</Button>
                         </Link>
                     </li>
                     <li>
-                        <Link to="/collections">
+                        <Link to={`/accounts/${account.id}/collections`}>
                             <Button className="bg-lime-200">Collections</Button>
                         </Link>
                     </li>

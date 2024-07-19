@@ -1,5 +1,5 @@
 import Button from 'components/common/Button';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FetchStatuses } from 'utils/constants';
 
@@ -12,6 +12,10 @@ function Login() {
     const [errors, setErrors] = useState({});
     const [fetchStatus, setFetchStatus] = useState(FetchStatuses.None);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        document.title = 'Log in';
+    }, []);
 
     const handleChange = event => {
         const { value, name } = event.target;
@@ -97,7 +101,7 @@ function Login() {
     return (
         <div className="w-full h-screen p-4 flex justify-center items-center">
             <div className="w-full max-w-lg p-4 flex flex-col gap-2 border border-solid border-black">
-                <Button className="bg-indigo-300">Abracadabra</Button>
+                <Button>An evening person?</Button>
                 <form onSubmit={handleSubmit}>
                     <fieldset className="flex flex-col gap-4 border border-solid border-black p-4">
                         <legend>Log in</legend>
@@ -106,7 +110,7 @@ function Login() {
                             <input
                                 className="border border-solid border-black outline-none px-4 py-2"
                                 name="email"
-                                placeholder="Type type your email"
+                                placeholder="Type your email"
                                 onChange={handleChange}
                                 onFocus={handleFocus}
                             />
@@ -114,34 +118,36 @@ function Login() {
                         </label>
                         <label className="flex flex-col gap-2">
                             Password:
-                            <input
-                                className="border border-solid border-black outline-none px-4 py-2"
-                                placeholder="Let me know, i will give an ice cream"
-                                type={isPasswordVisible ? 'text' : 'password'}
-                                onChange={handleChange}
-                                onFocus={handleFocus}
-                                name="password"
-                            />
+                            <div className="flex items-center gap-2">
+                                <input
+                                    className="flex-1 border border-solid border-black outline-none px-4 py-2"
+                                    placeholder="Let me know, i will give an ice cream"
+                                    type={isPasswordVisible ? 'text' : 'password'}
+                                    onChange={handleChange}
+                                    onFocus={handleFocus}
+                                    name="password"
+                                />
+                                <Button className="min-w-36" onClick={togglePasswordVisibility}>
+                                    {isPasswordVisible ? 'Hide password' : 'Show password'}
+                                </Button>
+                            </div>
                             <p className="text-sm">{errors.password}</p>
-                            <Button className="bg-red-200" onClick={togglePasswordVisibility}>
-                                Abracadabra
-                            </Button>
                         </label>
                         <div className="flex justify-between">
                             <label className="flex items-center gap-2">
                                 <input type="checkbox" />
-                                Remember who you are
+                                Remember me
                             </label>
-                            <a className="text-blue-300 underline cursor-pointer">You forgot?</a>
+                            <a className="underline cursor-pointer">You forgot?</a>
                         </div>
-                        <Button className="bg-orange-200 w-full" type="submit">
-                            {fetchStatus == FetchStatuses.Loading ? 'Loading...' : 'Buzz'}
+                        <Button className="w-full" type="submit">
+                            {fetchStatus == FetchStatuses.Loading ? 'Spining...' : 'Log in'}
                         </Button>
                         <Link
                             to="/sign-up"
-                            className="text-blue-300 underline cursor-pointer w-full text-center"
+                            className="underline cursor-pointer w-full text-center"
                         >
-                            Give me a sign
+                            Sign up
                         </Link>
                     </fieldset>
                 </form>

@@ -1,0 +1,29 @@
+authentication
+ -- Sign up
+    bổ sung icon về show/hide password
+    bổ sung field phone number kèm region?
+    third-party authentication
+ -- Login
+    forgot password not implemented
+ -- darkmode is not implemented
+ -- remember me is not implemented
+
+ quizzes
+  --chia theo thời gian
+  --chia draft and published
+  --filter
+    *details
+        --share quiz (publish/via link)
+        --bổ sung test && learn
+        --add to folder
+        --rating
+        --save quiz
+        --copy
+        --starred questions
+        --làm lại ui/ux (tham khảo google form)
+ folders
+    -share
+ account
+    -avatar
+ ux/ui
+    clone quizlet

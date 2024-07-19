@@ -8,31 +8,38 @@ function Layout() {
         <div className="w-full h-screen flex flex-col">
             <nav className="p-4 flex justify-between items-center border-b border-b-black">
                 <div className="flex items-center gap-4">
-                    <div className="w-[32px] h-[32px] border border-solid border-black rounded-full overflow-hidden">
+                    {/* <div className="w-[32px] h-[32px] border border-solid border-black rounded-full overflow-hidden flex-shrink-0">
                         <img className="w-full h-full object-cover" />
-                    </div>
-                    <Link to="/settings">
-                        <Button className="bg-red-300">Settings</Button>
+                    </div> */}
+                    <Link to="/settings" className="underline cursor-pointer">
+                        <Button>Settings</Button>
                     </Link>
                     <Link
                         to="/log-in"
                         onClick={() => localStorage.setItem('account', JSON.stringify(null))}
+                        className="underline cursor-pointer"
                     >
-                        <Button className="bg-green-200">Log out</Button>
+                       <Button>Log out</Button>
                     </Link>
-                    <Button to="/terms-and-policies" className="bg-orange-200">
-                        Terms and policies
-                    </Button>
+                    <Link to="/terms-and-policies" className="underline cursor-pointer">
+                       <Button>Terms and policies</Button>
+                    </Link>
                 </div>
                 <ul className="flex items-center gap-4 list-none">
                     <li>
-                        <Link to={`/accounts/${account.id}/quizzes`}>
-                            <Button className="bg-amber-100">Quizzes</Button>
+                        <Link
+                            className="underline cursor-pointer"
+                            to={`/accounts/${account.id}/quizzes`}
+                        >
+                            <Button>Quizzes</Button>
                         </Link>
                     </li>
                     <li>
-                        <Link to={`/accounts/${account.id}/collections`}>
-                            <Button className="bg-lime-200">Collections</Button>
+                        <Link
+                            className="underline cursor-pointer"
+                            to={`/accounts/${account.id}/collections`}
+                        >
+                            <Button>Collections</Button>
                         </Link>
                     </li>
                 </ul>

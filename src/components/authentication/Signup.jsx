@@ -175,7 +175,7 @@ const Signup = () => {
                             <p className="text-sm">{errors.confirmPassword}</p>
                         </label>
                         <Button type="submit">
-                            {fetchStatus == FetchStatuses.Loading ? 'Spining...' : "Sign up"}
+                            {fetchStatus == FetchStatuses.Loading ? '...' : "Sign up"}
                         </Button>
                         <Link
                             to="/log-in"

@@ -1,26 +1,26 @@
 authentication
  -- Sign up
-    bổ sung icon về show/hide password
-    bổ sung field phone number kèm region?
-    third-party authentication
+   bổ sung icon về show/hide password (ui/ux)
+   bổ sung field phone number kèm region? (optional)
+   third-party authentication (optional)
  -- Login
-    forgot password not implemented
- -- darkmode is not implemented
- -- remember me is not implemented
-
+   forgot password not implemented (optional)
+   darkmode is not implemented (ui/ux)
+   remember me is not implemented (optional)
  quizzes
-  --chia theo thời gian
-  --chia draft and published
-  --filter
+  --chia draft and theo thời gian (vài giây trc, vài phút trc, tiếng trước, today, yesterday, các tháng/năm)
     *details
-        --share quiz (publish/via link)
-        --bổ sung test && learn
+        --bổ sung modes test && learn
         --add to folder
-        --rating
         --save quiz
-        --copy
         --starred questions
         --làm lại ui/ux (tham khảo google form)
+
+        //////////////// làm cái nì phải refactor lại entity relationship
+        --share quiz (publish/via link)
+        --rating
+        --copy
+  --filter (optional) 
  folders
     -share
  account

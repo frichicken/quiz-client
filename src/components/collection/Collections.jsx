@@ -28,7 +28,7 @@ function Collections() {
         })
             .then(response => {
                 if (response.ok) {
-                    setCollections(collections.filter(it => it.id != collectionId))
+                    setCollections(collections.filter(it => it.id != collectionId));
                     return response;
                 }
 
@@ -38,59 +38,72 @@ function Collections() {
             .finally(() => {});
     };
 
-    if (fetchStatus == FetchStatuses.Loading)
-        return (
-            <div className="w-full h-full flex justify-center items-center border border-solid border-black p-2">
-                Spining...
-            </div>
-        );
-
     return (
-        <div className="w-full h-full flex flex-col gap-2 border border-solid border-black p-2 overflow-y-auto">
-            {collections.map(collection => {
-                const { title, description, id, createdAt, totalQuizzes } = collection;
-
-                return (
-                    <div
-                        key={id}
-                        className="text-left w-full px-4 py-2 border border-solid border-black cursor-pointer flex items-center justify-between"
-                        onClick={() => {
-                            navigate(`/accounts/${accountId}/collections/${id}`);
-                        }}
-                    >
-                        <div>
-                            <p>{title}</p>
-                            <p className="text-sm">{description}</p>
-                            <div className="flex items-center gap-1 mt-2">
-                                <div className="px-2 py-1 border border-solid border-black text-sm">
-                                    {totalQuizzes} Items
+        <div className="flex flex-col gap-2 w-full">
+            <div className="flex items-center justify-end">
+                <div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <input
+                    className="border border-solid border-black outline-none px-4 py-2 min-w-[28rem]"
+                    name="keyword"
+                    placeholder="Your grandma is going to check your search history"
+                />
+            </div>
+            {fetchStatus == FetchStatuses.Loading ? (
+                <div className="w-full flex-1 flex justify-center items-center p-2">
+                    ...
+                </div>
+            ) : (
+                <div className="w-full flex-1 flex flex-col gap-2 p-2 overflow-y-auto">
+                    {collections.map(collection => {
+                        const { title, description, id, createdAt, totalQuizzes } = collection;
+                        return (
+                            <div
+                                key={id}
+                                className="text-left w-full px-4 py-2 border border-solid border-black cursor-pointer flex items-center justify-between"
+                                onClick={() => {
+                                    navigate(`/accounts/${accountId}/collections/${id}`);
+                                }}
+                            >
+                                <div>
+                                    <p>{title}</p>
+                                    <p className="text-sm">{description}</p>
+                                    <div className="flex items-center gap-1 mt-2">
+                                        <div className="px-2 py-1 border border-solid border-black text-sm">
+                                            {totalQuizzes} Items
+                                        </div>
+                                        <div className="px-2 py-1 border border-solid border-black text-sm">
+                                            {new Date(createdAt).toDateString()}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="px-2 py-1 border border-solid border-black text-sm">
-                                    {new Date(createdAt).toDateString()}
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        onClick={event => {
+                                            event.stopPropagation();
+                                            navigate(
+                                                `/accounts/${accountId}/collections/${id}/edit`
+                                            );
+                                        }}
+                                    >
+                                        Edit
+                                    </Button>
+                                    <Button
+                                        onClick={event => {
+                                            event.stopPropagation();
+                                            handleDeleteCollection(id);
+                                        }}
+                                    >
+                                        Please forgive me
+                                    </Button>
                                 </div>
                             </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Button
-                                onClick={event => {
-                                    event.stopPropagation();
-                                    navigate(`/accounts/${accountId}/collections/${id}/edit`);
-                                }}
-                            >
-                                Edit
-                            </Button>
-                            <Button
-                                onClick={event => {
-                                    event.stopPropagation();
-                                    handleDeleteCollection(id);
-                                }}
-                            >
-                                Please forgive me
-                            </Button>
-                        </div>
-                    </div>
-                );
-            })}
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 }

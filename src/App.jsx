@@ -1,16 +1,15 @@
 import Login from 'components/authentication/Login';
 import Signup from 'components/authentication/Signup';
 import CollectionDetails from 'components/collection/CollectionDetails';
-import CollectionLayout from 'components/collection/CollectionLayout';
 import Collections from 'components/collection/Collections';
 import CollectionSettings from 'components/collection/CollectionSettings';
 import Layout from 'components/common/Layout';
 import Setttings from 'components/common/Setttings';
+import YourLibraryLayout from 'components/common/YourLibraryLayout';
 import QuizDetails from 'components/quiz/QuizDetails';
 import QuizPlayground from 'components/quiz/QuizPlayground';
 import QuizSettings from 'components/quiz/QuizSettings';
 import Quizzes from 'components/quiz/Quizzes';
-import QuizzLayout from 'components/quiz/QuizzLayout';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import './index.css';
 
@@ -47,7 +46,6 @@ function App() {
             )
         },
         {
-            path: '/',
             element: (
                 <AuthenticationWrapper>
                     <Layout />
@@ -55,22 +53,25 @@ function App() {
             ),
             children: [
                 {
-                    path: 'accounts/:accountId/quizzes',
-                    element: <QuizzLayout />,
+                    element: <YourLibraryLayout />,
                     children: [
-                        { index: true, element: <Quizzes /> },
-                        { path: ':quizId', element: <QuizDetails /> },
-                        { path: ':quizId/play', element: <QuizPlayground /> },
-                        { path: ':quizId/edit', element: <QuizSettings /> }
-                    ]
-                },
-                {
-                    path: 'accounts/:accountId/collections',
-                    element: <CollectionLayout />,
-                    children: [
-                        { index: true, element: <Collections /> },
-                        { path: ':collectionId', element: <CollectionDetails /> },
-                        { path: ':collectionId/edit', element: <CollectionSettings /> }
+                        {
+                            path: 'accounts/:accountId/quizzes',
+                            children: [
+                                { index: true, element: <Quizzes /> },
+                                { path: ':quizId', element: <QuizDetails /> },
+                                { path: ':quizId/play', element: <QuizPlayground /> },
+                                { path: ':quizId/edit', element: <QuizSettings /> }
+                            ]
+                        },
+                        {
+                            path: 'accounts/:accountId/collections',
+                            children: [
+                                { index: true, element: <Collections /> },
+                                { path: ':collectionId', element: <CollectionDetails /> },
+                                { path: ':collectionId/edit', element: <CollectionSettings /> }
+                            ]
+                        }
                     ]
                 },
                 {

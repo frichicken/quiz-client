@@ -1,9 +1,10 @@
-import { Outlet, useNavigate, useParams } from 'react-router-dom';
-import Button from '../common/Button';
-import { FetchStatuses } from 'utils/constants';
 import { useState } from 'react';
+import { NavLink, Outlet, useNavigate, useParams } from 'react-router-dom';
+import { FetchStatuses } from 'utils/constants';
+import Button from './Button';
+import clsx from 'clsx';
 
-const QuizzLayout = () => {
+const YourLibraryLayout = () => {
     const navigate = useNavigate();
     const { accountId } = useParams();
     const [fetchStatus, setFetchStatus] = useState(FetchStatuses.None);
@@ -39,20 +40,27 @@ const QuizzLayout = () => {
         <div className="p-4 flex flex-col gap-4 flex-1 overflow-hidden">
             <div className="flex items-center justify-between gap-4 flex-wrap">
                 <h1 className="text-lg tracking-wider border border-solid border-black px-4 py-2 flex-shrink-0">
-                    QUIZZES LADIES and GENTLEMEN
+                    Your Library
                 </h1>
-                <div className="flex items-center gap-4 flex-wrap">
-                    <Button className="flex-shrink-0" onClick={handleCreateQuiz}>
-                        {fetchStatus === FetchStatuses.Loading
-                            ? 'Spining...'
-                            : 'Just hit a button Morty, give me a beat'}
-                    </Button>
-                    <input
-                        className="border border-solid border-black outline-none px-4 py-2 min-w-[28rem] flex-1"
-                        name="keyword"
-                        placeholder="Your grandma is going to check your search history"
-                    />
-                </div>
+            </div>
+            <div className="flex items-center gap-2">
+                <NavLink className="underline cursor-pointer" to={`/accounts/${accountId}/quizzes`}>
+                    {({ isActive }) => (
+                        <Button className={clsx(isActive ? 'bg-black text-white' : '')}>
+                            Quizzes
+                        </Button>
+                    )}
+                </NavLink>
+                <NavLink
+                    className="underline cursor-pointer"
+                    to={`/accounts/${accountId}/collections`}
+                >
+                    {({ isActive }) => (
+                        <Button className={clsx(isActive ? 'bg-black text-white' : '')}>
+                            Collections
+                        </Button>
+                    )}
+                </NavLink>
             </div>
             <div className="flex flex-1 overflow-hidden">
                 <Outlet />
@@ -61,4 +69,4 @@ const QuizzLayout = () => {
     );
 };
 
-export default QuizzLayout;
+export default YourLibraryLayout;

@@ -141,7 +141,7 @@ function Login() {
                             <a className="underline cursor-pointer">You forgot?</a>
                         </div>
                         <Button className="w-full" type="submit">
-                            {fetchStatus == FetchStatuses.Loading ? 'Spining...' : 'Log in'}
+                            {fetchStatus == FetchStatuses.Loading ? '...' : 'Log in'}
                         </Button>
                         <Link
                             to="/sign-up"

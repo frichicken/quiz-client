@@ -7,6 +7,7 @@ function Quizzes() {
     const navigate = useNavigate();
     const [quizzes, setQuizzes] = useState([]);
     const [fetchStatus, setFetchStatus] = useState(FetchStatuses.None);
+    const [isFilterDropdownOpen, setIsFilterDropdown] = useState(false);
     const { accountId } = useParams();
 
     useEffect(() => {
@@ -39,12 +40,53 @@ function Quizzes() {
             .catch(error => console.error(error));
     };
 
+    const toggleFilterDropdown = () => setIsFilterDropdown(isFilterDropdownOpen ? false : true);
+
     const drafts = quizzes.filter(it => it.status == QuizStatuses.Draft);
     const publishedQuizzes = quizzes.filter(it => it.status == QuizStatuses.Published);
 
     return (
         <div className="flex flex-col gap-2 w-full">
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-between">
+                <div className="relative h-full flex items-center">
+                    <Button onClick={toggleFilterDropdown}>Recent</Button>
+                    {isFilterDropdownOpen && (
+                        <div className="absolute top-[calc(100%+8px)] left-[0] bg-white min-w-40 shadow-sm py-2 border border-solid border-black flex flex-col">
+                            <Button
+                                className="w-full border-none text-left"
+                                onClick={() => {
+                                    toggleFilterDropdown();
+                                }}
+                            >
+                                Recent
+                            </Button>
+                            <Button
+                                className="w-full border-none text-left"
+                                onClick={() => {
+                                    toggleFilterDropdown();
+                                }}
+                            >
+                                Draft
+                            </Button>
+                            <Button
+                                className="w-full border-none text-left"
+                                onClick={() => {
+                                    toggleFilterDropdown();
+                                }}
+                            >
+                                Published
+                            </Button>
+                            <Button
+                                className="w-full border-none text-left"
+                                onClick={() => {
+                                    toggleFilterDropdown();
+                                }}
+                            >
+                                Saved
+                            </Button>
+                        </div>
+                    )}
+                </div>
                 <input
                     className="border border-solid border-black outline-none px-4 py-2 min-w-[28rem]"
                     name="keyword"
@@ -52,9 +94,7 @@ function Quizzes() {
                 />
             </div>
             {fetchStatus == FetchStatuses.Loading ? (
-                <div className="w-full flex-1 flex justify-center items-center p-2">
-                    ...
-                </div>
+                <div className="w-full flex-1 flex justify-center items-center p-2">...</div>
             ) : (
                 <div className="flex flex-col flex-1 gap-2 w-full overflow-y-auto">
                     {drafts.length > 0 && (
@@ -74,12 +114,12 @@ function Quizzes() {
                                     return (
                                         <div
                                             key={id}
-                                            className="gap-4 text-left w-full px-4 py-2 border border-solid border-black cursor-pointer flex items-center justify-between"
+                                            className="gap-4 text-left w-full px-4 py-2 border border-solid border-black cursor-pointer flex items-center justify-between flex-col"
                                             onClick={() => {
                                                 navigate(`/accounts/${accountId}/quizzes/${id}`);
                                             }}
                                         >
-                                            <div className="flex-1">
+                                            <div className="flex-1 w-full">
                                                 <p>{title}</p>
                                                 <p className="text-sm line-clamp-2">
                                                     {description}
@@ -98,7 +138,7 @@ function Quizzes() {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-2 flex-shrink-0">
+                                            <div className="flex w-full items-center gap-2 flex-shrink-0">
                                                 <Button
                                                     onClick={event => {
                                                         event.stopPropagation();
@@ -106,8 +146,20 @@ function Quizzes() {
                                                             `/accounts/${accountId}/quizzes/${id}/play`
                                                         );
                                                     }}
+                                                    className="flex-1"
                                                 >
-                                                    Play
+                                                    Learn
+                                                </Button>
+                                                <Button
+                                                    onClick={event => {
+                                                        event.stopPropagation();
+                                                        navigate(
+                                                            `/accounts/${accountId}/quizzes/${id}/play`
+                                                        );
+                                                    }}
+                                                    className="flex-1"
+                                                >
+                                                    Test
                                                 </Button>
                                                 <Button
                                                     onClick={event => {
@@ -116,6 +168,7 @@ function Quizzes() {
                                                             `/accounts/${accountId}/quizzes/${id}/edit`
                                                         );
                                                     }}
+                                                    className="flex-1"
                                                 >
                                                     Edit
                                                 </Button>
@@ -124,10 +177,21 @@ function Quizzes() {
                                                         event.stopPropagation();
                                                         handleDeleteQuiz(id);
                                                     }}
+                                                    className="flex-1"
                                                 >
                                                     {fetchStatus == FetchStatuses.Loading
-                                                        ? 'Spining...'
-                                                        : 'Delete'}
+                                                        ? '...'
+                                                        : 'Remove'}
+                                                </Button>
+                                                <Button
+                                                    onClick={event => {
+                                                        event.stopPropagation();
+                                                    }}
+                                                    className="flex-1"
+                                                >
+                                                    {fetchStatus == FetchStatuses.Loading
+                                                        ? '...'
+                                                        : 'Add to saved'}
                                                 </Button>
                                             </div>
                                         </div>

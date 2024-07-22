@@ -1,6 +1,6 @@
 import Button from 'components/common/Button';
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { FetchStatuses, QuizStatuses } from 'utils/constants';
 
 const QuizSettings = () => {
@@ -129,34 +129,6 @@ const QuizSettings = () => {
                 setQuizFetchStatuses({
                     ...quizFetchStatuses,
                     publish: FetchStatuses.None
-                })
-            );
-    };
-
-    const handleDeleteQuiz = () => {
-        setQuizFetchStatuses({
-            ...quizFetchStatuses,
-            delete: FetchStatuses.Loading
-        });
-        fetch(`http://localhost:5184/api/accounts/${account.id}/quizzes/${quizId}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json'
-            }
-        })
-            .then(response => {
-                if (response.ok) {
-                    return navigate(`/accounts/${account.id}/quizzes`);
-                }
-
-                Promise.reject(response);
-            })
-            .catch(error => console.error(error))
-            .finally(() =>
-                setQuizFetchStatuses({
-                    ...quizFetchStatuses,
-                    delete: FetchStatuses.None
                 })
             );
     };
@@ -446,49 +418,31 @@ const QuizSettings = () => {
     const { questions = [] } = quiz;
 
     if (quizFetchStatuses.get == FetchStatuses.Loading)
-        return (
-            <div className="w-full h-full flex justify-center items-center border border-solid border-black p-2">
-                Spining...
-            </div>
-        );
+        return <div className="w-full h-full flex justify-center items-center p-4">Spining...</div>;
 
     return (
-        <div className="flex-1 border border-solid border-black p-4 overflow-y-auto">
+        <div className="flex-1 p-4 overflow-y-auto max-w-7xl w-full mx-auto">
             <div className="flex items-center justify-between">
                 <h2>{quizId ? 'Do whatever you want to this quiz' : 'Yes, another quiz'}</h2>
                 <div className="flex items-center gap-2">
                     {quiz.status == QuizStatuses.Draft && (
-                        <Button className="bg-amber-300" onClick={handlePublishQuiz}>
+                        <Button onClick={handlePublishQuiz}>
                             {quizFetchStatuses.publish == FetchStatuses.Loading
                                 ? 'Spining...'
                                 : 'Publish'}
                         </Button>
                     )}
-                    <Button className="bg-lime-50" onClick={handleSaveQuiz}>
+                    <Button onClick={handleSaveQuiz}>
                         {quizFetchStatuses.save == FetchStatuses.Loading ? 'Spining...' : 'Save'}
                     </Button>
-                    <Button className="bg-red-100" onClick={handleDeleteQuiz}>
-                        {quizFetchStatuses.delete == FetchStatuses.Loading
-                            ? 'Spining...'
-                            : 'Delete'}
-                    </Button>
-                    <Link
-                        to="/quizzes"
-                        onClick={event => {
-                            event.preventDefault();
-                            history.back();
-                        }}
-                    >
-                        <Button className="bg-indigo-300">Back</Button>
-                    </Link>
                 </div>
             </div>
             <form onSubmit={event => event.preventDefault()} className="mt-4">
-                <fieldset className="flex flex-col gap-4 border border-solid border-black p-4">
+                <p>Infomation</p>
+                <div className="flex flex-col gap-4 p-4">
                     <div className="px-2 py-1 border border-solid border-black text-sm w-fit">
                         {quiz.status == QuizStatuses.Draft ? 'Draft' : 'Published'}
                     </div>
-                    <legend>Infomation</legend>
                     <label className="flex flex-col gap-2">
                         Title:
                         <input
@@ -509,28 +463,36 @@ const QuizSettings = () => {
                             onChange={handleInputQuiz}
                         />
                     </label>
-                </fieldset>
+                </div>
             </form>
             <form onSubmit={event => event.preventDefault()} className="mt-4">
-                <fieldset className="flex flex-col gap-4 border border-solid border-black p-4">
-                    <legend>Questions</legend>
+                <div className="flex flex-col gap-4 p-4">
+                    <p>Questions</p>
                     <div className="flex flex-col gap-4">
-                        {questions.map(question => {
+                        {questions.map((question, index) => {
                             const { answers = [], text, id: questionId } = question;
 
                             return (
                                 <div key={questionId} className="flex flex-col gap-2">
-                                    <div className="cursor-pointer px-4 py-2 border border-solid border-black bg-orange-100 text-left flex items-center justify-between">
-                                        <p>Banana {questionId}</p>
-                                        <Button
-                                            onClick={event => {
-                                                event.stopPropagation();
-                                                handleDeleteQuestion(questionId);
-                                            }}
-                                            className="bg-red-300"
-                                        >
-                                            Please forgive me
-                                        </Button>
+                                    <div className="cursor-pointer px-4 py-2 border border-solid border-black text-left flex items-center justify-between">
+                                        <p>{index + 1}/</p>
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                onClick={event => {
+                                                    event.stopPropagation();
+                                                }}
+                                            >
+                                                Choose correct answers
+                                            </Button>
+                                            <Button
+                                                onClick={event => {
+                                                    event.stopPropagation();
+                                                    handleDeleteQuestion(questionId);
+                                                }}
+                                            >
+                                                Remove
+                                            </Button>
+                                        </div>
                                     </div>
                                     <div className="flex-col flex gap-4 px-2 overflow-hidden">
                                         <label className="flex flex-col gap-2">
@@ -606,14 +568,14 @@ const QuizSettings = () => {
                                                                 )
                                                             }
                                                         >
-                                                            I&apos;m sorry{' '}
+                                                            Remove
                                                         </Button>
                                                     </label>
                                                 );
                                             })}
                                         </div>
                                         <Button
-                                            className="bg-blue-100 w-full"
+                                            className="w-full"
                                             onClick={() => handleCreateAnswer(questionId)}
                                         >
                                             Meow
@@ -625,14 +587,13 @@ const QuizSettings = () => {
                         <Button
                             disabled={questionFetchStatuses.create == FetchStatuses.Loading}
                             onClick={handleCreateQuestion}
-                            className="bg-orange-300"
                         >
                             {questionFetchStatuses.create == FetchStatuses.Loading
                                 ? 'Spining...'
                                 : 'Can i have another one, please? please, one more'}
                         </Button>
                     </div>
-                </fieldset>
+                </div>
             </form>
         </div>
     );

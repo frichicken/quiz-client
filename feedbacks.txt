@@ -8,7 +8,7 @@ authentication
    darkmode is not implemented (ui/ux)
    remember me is not implemented (optional)
  quizzes
-  --chia draft and theo thời gian (vài giây trc, vài phút trc, tiếng trước, today, yesterday, các tháng/năm)
+  --chia draft (in progress) and published thì chia theo thời gian (vài giây trc, vài phút trc, tiếng trước, today, yesterday, các tháng/năm)
     *details
         --bổ sung modes test && learn
         --add to folder

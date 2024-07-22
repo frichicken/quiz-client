@@ -66,7 +66,7 @@ function Layout() {
 
     return (
         <div className="w-full h-screen flex flex-col">
-            <nav className="flex justify-between border-b border-b-black gap-6 h-[67px] px-4">
+            <nav className="flex justify-between border-b border-b-black gap-6 h-[67px] px-4 flex-shrink-0">
                 <div className="flex items-center gap-3">
                     <Link className="underline cursor-pointer">
                         <Button>Home</Button>

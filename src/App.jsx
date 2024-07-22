@@ -57,26 +57,32 @@ function App() {
                     children: [
                         {
                             path: 'accounts/:accountId/quizzes',
-                            children: [
-                                { index: true, element: <Quizzes /> },
-                                { path: ':quizId', element: <QuizDetails /> },
-                                { path: ':quizId/play', element: <QuizPlayground /> },
-                                { path: ':quizId/edit', element: <QuizSettings /> }
-                            ]
+                            children: [{ index: true, element: <Quizzes /> }]
                         },
                         {
                             path: 'accounts/:accountId/collections',
-                            children: [
-                                { index: true, element: <Collections /> },
-                                { path: ':collectionId', element: <CollectionDetails /> },
-                                { path: ':collectionId/edit', element: <CollectionSettings /> }
-                            ]
+                            children: [{ index: true, element: <Collections /> }]
                         }
                     ]
                 },
                 {
                     path: 'settings',
                     element: <Setttings />
+                },
+                {
+                    path: 'accounts/:accountId/quizzes',
+                    children: [
+                        { path: ':quizId', element: <QuizDetails /> },
+                        { path: ':quizId/play', element: <QuizPlayground /> },
+                        { path: ':quizId/edit', element: <QuizSettings /> }
+                    ]
+                },
+                {
+                    path: 'accounts/:accountId/collections',
+                    children: [
+                        { path: ':collectionId', element: <CollectionDetails /> },
+                        { path: ':collectionId/edit', element: <CollectionSettings /> }
+                    ]
                 }
             ]
         }

@@ -119,20 +119,10 @@ function Collections() {
                                     <Button
                                         onClick={event => {
                                             event.stopPropagation();
-                                            navigate(
-                                                `/accounts/${accountId}/collections/${id}/edit`
-                                            );
-                                        }}
-                                    >
-                                        Edit
-                                    </Button>
-                                    <Button
-                                        onClick={event => {
-                                            event.stopPropagation();
                                             handleDeleteCollection(id);
                                         }}
                                     >
-                                        Please forgive me
+                                        Remove
                                     </Button>
                                 </div>
                             </div>

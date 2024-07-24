@@ -1,12 +1,12 @@
+import clsx from 'clsx';
 import Button from 'components/common/Button';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { FetchStatuses, QuizStatuses } from 'utils/constants';
 
 const QuizSettings = () => {
     const account = JSON.parse(localStorage.getItem('account'));
     const { quizId } = useParams();
-    const navigate = useNavigate();
     const [quiz, setQuiz] = useState({
         title: '',
         description: '',
@@ -59,9 +59,11 @@ const QuizSettings = () => {
             ...quiz,
             [name]: value
         });
+
+        handleUpdateQuiz();
     };
 
-    const handleSaveQuiz = () => {
+    const handleUpdateQuiz = () => {
         setQuizFetchStatuses({
             ...quizFetchStatuses,
             save: FetchStatuses.Loading
@@ -145,7 +147,7 @@ const QuizSettings = () => {
                 Accept: 'application/json'
             },
             body: JSON.stringify({
-                text: ''
+                text: 'Question'
             })
         })
             .then(response => {
@@ -223,9 +225,11 @@ const QuizSettings = () => {
             ...quiz,
             questions: newQuestions
         });
+
+        handleUpdateQuestion();
     };
 
-    const handleSaveQuestion = id => {
+    const handleUpdateQuestion = id => {
         const { questions = [] } = quiz;
         const targetQuestion = questions.find(it => it.id == id);
 
@@ -269,7 +273,7 @@ const QuizSettings = () => {
                 Accept: 'application/json'
             },
             body: JSON.stringify({
-                text: ''
+                text: 'Answer'
             })
         })
             .then(response => {
@@ -325,6 +329,8 @@ const QuizSettings = () => {
             ...quiz,
             questions: newQuestions
         });
+
+        hanldeUpdateAnswer();
     };
 
     const handleChooseCorrectAnswer = (questionId, answerId) => {
@@ -355,7 +361,7 @@ const QuizSettings = () => {
         });
     };
 
-    const hanldeSaveAnswer = (questionId, answerId) => {
+    const hanldeUpdateAnswer = (questionId, answerId) => {
         const question = quiz.questions.find(it => it.id == questionId);
         const answer = question.answers.find(it => it.id == answerId);
 
@@ -417,184 +423,236 @@ const QuizSettings = () => {
 
     const { questions = [] } = quiz;
 
+    const handleToggleChooseCorrectAnswer = id => {
+        const question = questions.find(it => it.id == id);
+
+        question.isChooseCorrectAnswerOpen = question.isChooseCorrectAnswerOpen ? false : true;
+
+        const newQuestions = questions.map(it => (it.id == id ? question : it));
+
+        setQuiz({
+            ...quiz,
+            questions: newQuestions
+        });
+
+        hanldeUpdateAnswer();
+    };
+
     if (quizFetchStatuses.get == FetchStatuses.Loading)
         return <div className="w-full h-full flex justify-center items-center p-4">Spining...</div>;
 
     return (
-        <div className="flex-1 p-4 overflow-y-auto max-w-7xl w-full mx-auto">
-            <div className="flex items-center justify-between">
-                <h2>{quizId ? 'Do whatever you want to this quiz' : 'Yes, another quiz'}</h2>
-                <div className="flex items-center gap-2">
-                    {quiz.status == QuizStatuses.Draft && (
-                        <Button onClick={handlePublishQuiz}>
-                            {quizFetchStatuses.publish == FetchStatuses.Loading
-                                ? 'Spining...'
-                                : 'Publish'}
-                        </Button>
-                    )}
-                    <Button onClick={handleSaveQuiz}>
-                        {quizFetchStatuses.save == FetchStatuses.Loading ? 'Spining...' : 'Save'}
-                    </Button>
-                </div>
-            </div>
-            <form onSubmit={event => event.preventDefault()} className="mt-4">
-                <p>Infomation</p>
-                <div className="flex flex-col gap-4 p-4">
-                    <div className="px-2 py-1 border border-solid border-black text-sm w-fit">
-                        {quiz.status == QuizStatuses.Draft ? 'Draft' : 'Published'}
+        <div className="flex-1 overflow-y-auto">
+            <div className="max-w-7xl w-full mx-auto p-4">
+                <div className="flex items-center justify-between">
+                    <h2>{quizId ? 'Do whatever you want to this quiz' : 'Yes, another quiz'}</h2>
+                    <div className="flex items-center gap-2">
+                        {quiz.status == QuizStatuses.Draft && (
+                            <Button onClick={handlePublishQuiz}>
+                                {quizFetchStatuses.publish == FetchStatuses.Loading
+                                    ? 'Spining...'
+                                    : 'Publish'}
+                            </Button>
+                        )}
                     </div>
-                    <label className="flex flex-col gap-2">
-                        Title:
-                        <input
-                            className="border border-solid border-black outline-none px-4 py-2"
-                            name="title"
-                            placeholder="Titled this quiz, please"
-                            value={quiz.title}
-                            onChange={handleInputQuiz}
-                        />
-                    </label>
-                    <label className="flex flex-col gap-2">
-                        Description:
-                        <textarea
-                            className="border border-solid border-black outline-none px-4 py-2"
-                            name="description"
-                            placeholder="Give it some descriptive words"
-                            value={quiz.description}
-                            onChange={handleInputQuiz}
-                        />
-                    </label>
                 </div>
-            </form>
-            <form onSubmit={event => event.preventDefault()} className="mt-4">
-                <div className="flex flex-col gap-4 p-4">
-                    <p>Questions</p>
+                <form onSubmit={event => event.preventDefault()} className="mt-4">
+                    <p>Infomation</p>
+                    <div className="flex flex-col gap-4 p-4">
+                        <label className="flex flex-col gap-2">
+                            Title:
+                            <input
+                                className="border border-solid border-black outline-none px-4 py-2"
+                                name="title"
+                                placeholder="Titled this quiz, please"
+                                value={quiz.title}
+                                onChange={handleInputQuiz}
+                            />
+                        </label>
+                        <label className="flex flex-col gap-2">
+                            Description:
+                            <textarea
+                                className="border border-solid border-black outline-none px-4 py-2"
+                                name="description"
+                                placeholder="Give it some descriptive words"
+                                value={quiz.description}
+                                onChange={handleInputQuiz}
+                            />
+                        </label>
+                    </div>
+                </form>
+                <form onSubmit={event => event.preventDefault()} className="mt-4">
                     <div className="flex flex-col gap-4">
-                        {questions.map((question, index) => {
-                            const { answers = [], text, id: questionId } = question;
+                        <div className="flex items-center justify-between">
+                            Questions
+                            <Button
+                                disabled={questionFetchStatuses.create == FetchStatuses.Loading}
+                                onClick={handleCreateQuestion}
+                            >
+                                {questionFetchStatuses.create == FetchStatuses.Loading
+                                    ? 'Spining...'
+                                    : 'Add question'}
+                            </Button>
+                        </div>
+                        <div className="flex flex-col gap-4">
+                            {questions.map((question, index) => {
+                                const {
+                                    answers = [],
+                                    text,
+                                    id: questionId,
+                                    isChooseCorrectAnswerOpen
+                                } = question;
 
-                            return (
-                                <div key={questionId} className="flex flex-col gap-2">
-                                    <div className="cursor-pointer px-4 py-2 border border-solid border-black text-left flex items-center justify-between">
-                                        <p>{index + 1}/</p>
-                                        <div className="flex items-center gap-2">
-                                            <Button
-                                                onClick={event => {
-                                                    event.stopPropagation();
-                                                }}
-                                            >
-                                                Choose correct answers
-                                            </Button>
-                                            <Button
-                                                onClick={event => {
-                                                    event.stopPropagation();
-                                                    handleDeleteQuestion(questionId);
-                                                }}
-                                            >
-                                                Remove
-                                            </Button>
-                                        </div>
-                                    </div>
-                                    <div className="flex-col flex gap-4 px-2 overflow-hidden">
-                                        <label className="flex flex-col gap-2">
-                                            Question:
-                                            <div className="flex items-center gap-2">
-                                                <textarea
-                                                    className="w-full border border-solid border-black outline-none px-4 py-2"
-                                                    value={text}
-                                                    placeholder="Please type the text of this question"
-                                                    name="text"
-                                                    onChange={event =>
-                                                        handleInputQuestion(event, questionId)
-                                                    }
-                                                />
-                                                <Button
-                                                    onClick={() => handleSaveQuestion(questionId)}
-                                                >
-                                                    Save
-                                                </Button>
-                                            </div>
-                                        </label>
-                                        <div className="flex flex-col gap-2">
-                                            <p>Answers:</p>
-                                            {answers.map(answer => {
-                                                const { isCorrect, text, id: answerId } = answer;
-
-                                                return (
-                                                    <label
-                                                        key={answerId}
-                                                        className="flex items-center gap-2"
-                                                    >
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={isCorrect}
-                                                            name="isCorrect"
-                                                            onChange={() =>
-                                                                handleChooseCorrectAnswer(
-                                                                    questionId,
-                                                                    answerId
-                                                                )
-                                                            }
-                                                        />
-                                                        <textarea
-                                                            className="w-full border border-solid border-black outline-none px-4 py-2"
-                                                            value={text}
-                                                            placeholder="Please type the text of this answer, don't forget to choose at least one correct answer"
-                                                            name="text"
-                                                            onChange={event =>
-                                                                handleInputAnswer(
-                                                                    event,
-                                                                    questionId,
-                                                                    answerId
-                                                                )
-                                                            }
-                                                        />
+                                return (
+                                    <div
+                                        key={questionId}
+                                        className="flex flex-col gap-2 border border-solid border-black py-4"
+                                    >
+                                        <div className="cursor-pointer px-4 py-2 text-left flex items-center justify-between gap-6">
+                                            <p className="flex items-center gap-3 flex-1">
+                                                {index + 1}/
+                                                {isChooseCorrectAnswerOpen ? (
+                                                    <p className="px-4 py-2 border border-solid border-transparent">
+                                                        {text}
+                                                    </p>
+                                                ) : (
+                                                    <textarea
+                                                        className="flex-1 border border-solid border-black outline-none px-4 py-2"
+                                                        value={text}
+                                                        placeholder="Please type the text of this question"
+                                                        name="text"
+                                                        onChange={event =>
+                                                            handleInputQuestion(event, questionId)
+                                                        }
+                                                        rows={1}
+                                                    />
+                                                )}
+                                                {isChooseCorrectAnswerOpen || (
+                                                    <>
                                                         <Button
-                                                            className="flex-shrink-0"
                                                             onClick={() =>
-                                                                hanldeSaveAnswer(
-                                                                    questionId,
-                                                                    answerId
-                                                                )
+                                                                handleCreateAnswer(questionId)
                                                             }
                                                         >
-                                                            Save
+                                                            Add answer
                                                         </Button>
                                                         <Button
-                                                            className="flex-shrink-0"
-                                                            onClick={() =>
-                                                                hanldeDeleteAnswer(
-                                                                    questionId,
-                                                                    answerId
-                                                                )
-                                                            }
+                                                            onClick={event => {
+                                                                event.stopPropagation();
+                                                                handleDeleteQuestion(questionId);
+                                                            }}
                                                         >
                                                             Remove
                                                         </Button>
-                                                    </label>
-                                                );
-                                            })}
+                                                    </>
+                                                )}
+                                            </p>
                                         </div>
-                                        <Button
-                                            className="w-full"
-                                            onClick={() => handleCreateAnswer(questionId)}
-                                        >
-                                            Meow
-                                        </Button>
+                                        <div className="flex-col flex gap-4 px-4 overflow-hidden">
+                                            {isChooseCorrectAnswerOpen ? (
+                                                <>
+                                                    <div className="flex flex-col gap-2">
+                                                        {answers.map(answer => {
+                                                            const {
+                                                                text,
+                                                                id: answerId,
+                                                                isCorrect
+                                                            } = answer;
+
+                                                            return (
+                                                                <Button
+                                                                    key={answerId}
+                                                                    className={clsx(
+                                                                        'text-left',
+                                                                        isCorrect
+                                                                            ? 'bg-green-200'
+                                                                            : ''
+                                                                    )}
+                                                                    onClick={() =>
+                                                                        handleChooseCorrectAnswer(
+                                                                            questionId,
+                                                                            answerId
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    {text}
+                                                                </Button>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="flex flex-col gap-2">
+                                                        {answers.map(answer => {
+                                                            const {
+                                                                isCorrect,
+                                                                text,
+                                                                id: answerId
+                                                            } = answer;
+
+                                                            return (
+                                                                <label
+                                                                    key={answerId}
+                                                                    className="flex items-center gap-2"
+                                                                >
+                                                                    <textarea
+                                                                        className="w-full border border-solid border-black outline-none px-4 py-2"
+                                                                        value={text}
+                                                                        placeholder="Please type the text of this answer, don't forget to choose at least one correct answer"
+                                                                        name="text"
+                                                                        onChange={event =>
+                                                                            handleInputAnswer(
+                                                                                event,
+                                                                                questionId,
+                                                                                answerId
+                                                                            )
+                                                                        }
+                                                                        rows={1}
+                                                                    />
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={isCorrect}
+                                                                        name="isCorrect"
+                                                                    />
+                                                                    <Button
+                                                                        className="flex-shrink-0"
+                                                                        onClick={() =>
+                                                                            hanldeDeleteAnswer(
+                                                                                questionId,
+                                                                                answerId
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        Remove
+                                                                    </Button>
+                                                                </label>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                        <div className="cursor-pointer px-4 py-2 gap-2 text-left flex items-center justify-between">
+                                            <Button
+                                                className="flex-1"
+                                                onClick={event => {
+                                                    event.stopPropagation();
+                                                    handleToggleChooseCorrectAnswer(questionId);
+                                                }}
+                                            >
+                                                {isChooseCorrectAnswerOpen
+                                                    ? 'Done'
+                                                    : 'Choose correct answers'}
+                                            </Button>
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        })}
-                        <Button
-                            disabled={questionFetchStatuses.create == FetchStatuses.Loading}
-                            onClick={handleCreateQuestion}
-                        >
-                            {questionFetchStatuses.create == FetchStatuses.Loading
-                                ? 'Spining...'
-                                : 'Can i have another one, please? please, one more'}
-                        </Button>
+                                );
+                            })}
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     );
 };

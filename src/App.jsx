@@ -2,7 +2,6 @@ import Login from 'components/authentication/Login';
 import Signup from 'components/authentication/Signup';
 import CollectionDetails from 'components/collection/CollectionDetails';
 import Collections from 'components/collection/Collections';
-import CollectionSettings from 'components/collection/CollectionSettings';
 import Layout from 'components/common/Layout';
 import Setttings from 'components/common/Setttings';
 import YourLibraryLayout from 'components/common/YourLibraryLayout';
@@ -79,10 +78,7 @@ function App() {
                 },
                 {
                     path: 'accounts/:accountId/collections',
-                    children: [
-                        { path: ':collectionId', element: <CollectionDetails /> },
-                        { path: ':collectionId/edit', element: <CollectionSettings /> }
-                    ]
+                    children: [{ path: ':collectionId', element: <CollectionDetails /> }]
                 }
             ]
         }

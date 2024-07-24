@@ -58,30 +58,50 @@ const CollectionDetails = () => {
             .finally(() => {});
     };
 
+    const handleRemoveQuiz = (event, quizId) => {
+        event.stopPropagation();
+
+        fetch(
+            `http://localhost:5184/api/accounts/${accountId}/collections/${collectionId}/delete-quiz/${quizId}`,
+            {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json'
+                }
+            }
+        )
+            .then(response => {
+                if (response.ok) {
+                    collection.quizzes = collection.quizzes.filter(it => it.id != quizId);
+
+                    setCollection({ ...collection });
+                    return response;
+                }
+
+                Promise.reject(response);
+            })
+            .catch(error => console.error(error))
+    };
+
     if (fetchStatus == FetchStatuses.Loading)
-        return (
-            <div className="w-full flex justify-center items-center border border-solid border-black p-2">
-                Spining...
-            </div>
-        );
+        return <div className="w-full flex-1 flex justify-center items-center p-2">Spining...</div>;
 
     return (
-        <div className="flex-1 border border-solid border-black p-4 flex flex-col gap-4">
-            <div
-                onClick={event => {
-                    event.preventDefault();
-                    history.back();
-                }}
-                className="text-blue-300 underline cursor-pointer text-left"
-            >
-                Back?
-            </div>
+        <div className="flex-1 p-4 flex flex-col gap-4">
             <div className="flex items-center justify-between">
-                <div>
-                    <p>{collection.title}</p>
-                    <p className="text-sm">{collection.description}</p>
+                <div className="flex flex-col gap-2">
+                    <input
+                        className="border border-solid border-black outline-none px-4 py-2"
+                        value={collection.title}
+                    />
+                    <textarea
+                        className="border border-solid border-black outline-none px-4 py-2 text-sm"
+                        value={collection.description}
+                        rows={1}
+                    />
                 </div>
-                <Button onClick={handleDeleteCollection}>Please forgive me</Button>
+                <Button onClick={handleDeleteCollection}>Remove</Button>
             </div>
             {collection.quizzes.map(quiz => {
                 const { title, description, id, totalQuestions, createdAt } = quiz;
@@ -89,20 +109,25 @@ const CollectionDetails = () => {
                 return (
                     <div
                         key={id}
-                        className="text-left w-full px-4 py-2 border border-solid border-black cursor-pointer"
+                        className="text-left w-full px-4 py-2 border border-solid border-black cursor-pointer flex items-center justify-between"
                         onClick={() => {
                             navigate(`/accounts/${accountId}/quizzes/${id}`);
                         }}
                     >
-                        <p>{title}</p>
-                        <p className="text-sm">{description}</p>
-                        <div className="flex items-center gap-1 mt-2">
-                            <div className="px-2 py-1 border border-solid border-black text-sm">
-                                {totalQuestions} Terms
+                        <div>
+                            <p>{title}</p>
+                            <p className="text-sm">{description}</p>
+                            <div className="flex items-center gap-1 mt-2">
+                                <div className="px-2 py-1 border border-solid border-black text-sm">
+                                    {totalQuestions} Terms
+                                </div>
+                                <div className="px-2 py-1 border border-solid border-black text-sm">
+                                    {new Date(createdAt).toDateString()}
+                                </div>
                             </div>
-                            <div className="px-2 py-1 border border-solid border-black text-sm">
-                                {new Date(createdAt).toDateString()}
-                            </div>
+                        </div>
+                        <div>
+                            <Button onClick={(event) => handleRemoveQuiz(event, id)}>Remove</Button>
                         </div>
                     </div>
                 );

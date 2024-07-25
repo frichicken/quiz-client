@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import Button from 'components/common/Button';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { debounce } from 'utils';
 import { FetchStatuses, QuizStatuses } from 'utils/constants';
 
 const QuizSettings = () => {
@@ -52,18 +53,24 @@ const QuizSettings = () => {
             );
     }, [account.id, quizId]);
 
-    const handleInputQuiz = event => {
-        const { name, value } = event.target;
+    // Handle quizzes
+    const handleInputQuizDebounce = debounce(event => {
+        const { value, name } = event.target;
+
+        const newQuiz = {
+            ...quiz,
+            [name]: value
+        };
 
         setQuiz({
             ...quiz,
             [name]: value
         });
 
-        handleUpdateQuiz();
-    };
+        handleUpdateQuiz(newQuiz);
+    }, 800);
 
-    const handleUpdateQuiz = () => {
+    const handleUpdateQuiz = quiz => {
         setQuizFetchStatuses({
             ...quizFetchStatuses,
             save: FetchStatuses.Loading
@@ -203,7 +210,8 @@ const QuizSettings = () => {
             );
     };
 
-    const handleInputQuestion = (event, id) => {
+    // Handle questions
+    const handleInputQuestion = debounce((event, id) => {
         const { name, value } = event.target;
         const { questions = [] } = quiz;
 
@@ -226,27 +234,24 @@ const QuizSettings = () => {
             questions: newQuestions
         });
 
-        handleUpdateQuestion();
-    };
+        handleUpdateQuestion(targetQuestion);
+    }, 800);
 
-    const handleUpdateQuestion = id => {
-        const { questions = [] } = quiz;
-        const targetQuestion = questions.find(it => it.id == id);
-
+    const handleUpdateQuestion = question => {
         setQuestionFetchStatuses({
             ...quizFetchStatuses,
             save: FetchStatuses.Loading
         });
 
-        fetch(`http://localhost:5184/api/quizzes/${quizId}/questions/${id}`, {
+        fetch(`http://localhost:5184/api/quizzes/${quizId}/questions/${question.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json'
             },
             body: JSON.stringify({
-                id,
-                text: targetQuestion.text
+                id: question.id,
+                text: question.text
             })
         })
             .then(response => {
@@ -265,6 +270,7 @@ const QuizSettings = () => {
             );
     };
 
+    // Handle answers
     const handleCreateAnswer = questionId => {
         fetch(`http://localhost:5184/api/questions/${questionId}/answers`, {
             method: 'POST',
@@ -302,7 +308,7 @@ const QuizSettings = () => {
             .finally(() => {});
     };
 
-    const handleInputAnswer = (event, questionId, answerId) => {
+    const handleInputAnswer = debounce((event, questionId, answerId) => {
         const { name, value } = event.target;
         const question = quiz.questions.find(it => it.id == questionId);
         const answer = question.answers.find(it => it.id == answerId);
@@ -330,10 +336,10 @@ const QuizSettings = () => {
             questions: newQuestions
         });
 
-        hanldeUpdateAnswer();
-    };
+        hanldeUpdateAnswer(questionId, answer);
+    }, 800);
 
-    const handleChooseCorrectAnswer = (questionId, answerId) => {
+    const handleChooseCorrectAnswer = debounce((questionId, answerId) => {
         const question = quiz.questions.find(it => it.id == questionId);
         const answer = question.answers.find(it => it.id == answerId);
 
@@ -359,13 +365,12 @@ const QuizSettings = () => {
             ...quiz,
             questions: newQuestions
         });
-    };
 
-    const hanldeUpdateAnswer = (questionId, answerId) => {
-        const question = quiz.questions.find(it => it.id == questionId);
-        const answer = question.answers.find(it => it.id == answerId);
+        hanldeUpdateAnswer(questionId, answer);
+    });
 
-        fetch(`http://localhost:5184/api/questions/${questionId}/answers/${answerId}`, {
+    const hanldeUpdateAnswer = (questionId, answer) => {
+        fetch(`http://localhost:5184/api/questions/${questionId}/answers/${answer.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -465,8 +470,8 @@ const QuizSettings = () => {
                                 className="border border-solid border-black outline-none px-4 py-2"
                                 name="title"
                                 placeholder="Titled this quiz, please"
-                                value={quiz.title}
-                                onChange={handleInputQuiz}
+                                defaultValue={quiz.title}
+                                onChange={handleInputQuizDebounce}
                             />
                         </label>
                         <label className="flex flex-col gap-2">
@@ -475,8 +480,8 @@ const QuizSettings = () => {
                                 className="border border-solid border-black outline-none px-4 py-2"
                                 name="description"
                                 placeholder="Give it some descriptive words"
-                                value={quiz.description}
-                                onChange={handleInputQuiz}
+                                defaultValue={quiz.description}
+                                onChange={handleInputQuizDebounce}
                             />
                         </label>
                     </div>
@@ -518,7 +523,7 @@ const QuizSettings = () => {
                                                 ) : (
                                                     <textarea
                                                         className="flex-1 border border-solid border-black outline-none px-4 py-2"
-                                                        value={text}
+                                                        defaultValue={text}
                                                         placeholder="Please type the text of this question"
                                                         name="text"
                                                         onChange={event =>
@@ -598,7 +603,7 @@ const QuizSettings = () => {
                                                                 >
                                                                     <textarea
                                                                         className="w-full border border-solid border-black outline-none px-4 py-2"
-                                                                        value={text}
+                                                                        defaultValue={text}
                                                                         placeholder="Please type the text of this answer, don't forget to choose at least one correct answer"
                                                                         name="text"
                                                                         onChange={event =>

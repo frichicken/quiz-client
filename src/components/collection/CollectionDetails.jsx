@@ -1,6 +1,7 @@
 import Button from 'components/common/Button';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { debounce } from 'utils';
 import { FetchStatuses } from 'utils/constants';
 
 const CollectionDetails = () => {
@@ -81,7 +82,46 @@ const CollectionDetails = () => {
 
                 Promise.reject(response);
             })
+            .catch(error => console.error(error));
+    };
+
+    const handleInputCollectionDebounce = debounce(event => {
+        const { value, name } = event.target;
+
+        const newCollection = {
+            ...collection,
+            [name]: value
+        };
+
+        setCollection(newCollection);
+        handleUpdateCollection(newCollection);
+    }, 800);
+
+    const handleUpdateCollection = collection => {
+        fetch(`http://localhost:5184/api/accounts/${accountId}/collections/${collectionId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json'
+            },
+            body: JSON.stringify({
+                id: collection.id,
+                title: collection.title,
+                description: collection.description
+            })
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+
+                Promise.reject(response);
+            })
+            .then(data => {
+                setCollection(data);
+            })
             .catch(error => console.error(error))
+            .finally(() => setFetchStatus(FetchStatuses.None));
     };
 
     if (fetchStatus == FetchStatuses.Loading)
@@ -93,12 +133,16 @@ const CollectionDetails = () => {
                 <div className="flex flex-col gap-2">
                     <input
                         className="border border-solid border-black outline-none px-4 py-2"
-                        value={collection.title}
+                        defaultValue={collection.title}
+                        name="title"
+                        onChange={handleInputCollectionDebounce}
                     />
                     <textarea
                         className="border border-solid border-black outline-none px-4 py-2 text-sm"
-                        value={collection.description}
+                        defaultValue={collection.description}
                         rows={1}
+                        name="description"
+                        onChange={handleInputCollectionDebounce}
                     />
                 </div>
                 <Button onClick={handleDeleteCollection}>Remove</Button>
@@ -127,7 +171,7 @@ const CollectionDetails = () => {
                             </div>
                         </div>
                         <div>
-                            <Button onClick={(event) => handleRemoveQuiz(event, id)}>Remove</Button>
+                            <Button onClick={event => handleRemoveQuiz(event, id)}>Remove</Button>
                         </div>
                     </div>
                 );

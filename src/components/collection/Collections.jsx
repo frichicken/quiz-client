@@ -9,6 +9,7 @@ function Collections() {
     const { accountId } = useParams();
     const [isFilterDropdownOpen, setIsFilterDropdown] = useState(false);
     const navigate = useNavigate();
+    const [keyword, setKeyword] = useState('');
 
     useEffect(() => {
         setFetchStatus(FetchStatuses.Loading);
@@ -39,12 +40,16 @@ function Collections() {
             .finally(() => {});
     };
 
+    const handleKeywordChange = event => {
+        setKeyword(event.target.value);
+    };
+
     const toggleFilterDropdown = () => setIsFilterDropdown(isFilterDropdownOpen ? false : true);
 
     return (
         <div className="flex flex-col gap-2 w-full">
-            <div className="flex items-center justify-between">
-                <div className="relative h-full flex items-center">
+            <div className="flex items-center justify-end">
+                {/* <div className="relative h-full flex items-center">
                     <Button onClick={toggleFilterDropdown}>Recent</Button>
                     {isFilterDropdownOpen && (
                         <div className="absolute top-[calc(100%+8px)] left-[0] bg-white min-w-40 shadow-sm py-2 border border-solid border-black flex flex-col">
@@ -82,18 +87,19 @@ function Collections() {
                             </Button>
                         </div>
                     )}
-                </div>
+                </div> */}
                 <input
                     className="border border-solid border-black outline-none px-4 py-2 min-w-[28rem]"
                     name="keyword"
                     placeholder="Your grandma is going to check your search history"
+                    onChange={handleKeywordChange}
                 />
             </div>
             {fetchStatus == FetchStatuses.Loading ? (
                 <div className="w-full flex-1 flex justify-center items-center p-2">...</div>
             ) : (
                 <div className="w-full flex-1 flex flex-col gap-2 p-2 overflow-y-auto">
-                    {collections.map(collection => {
+                    {collections.filter(it => it.title.trim().toLowerCase().includes(keyword.trim().toLowerCase())).map(collection => {
                         const { title, description, id, createdAt, totalQuizzes } = collection;
                         return (
                             <div

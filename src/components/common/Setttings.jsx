@@ -116,7 +116,7 @@ const Setttings = () => {
                 {currentTab == Tabs.Information && (
                     <form
                         onSubmit={event => event.preventDefault()}
-                        className="flex flex-col gap-4 border border-solid border-black p-4"
+                        className="flex flex-col gap-4"
                     >
                         <label className="flex flex-col gap-2">
                             Email:
@@ -174,7 +174,7 @@ const Setttings = () => {
                 {currentTab == Tabs.AccountAndPrivacy && (
                     <form
                         onSubmit={event => event.preventDefault()}
-                        className="flex flex-col gap-4 border border-solid border-black p-4"
+                        className="flex flex-col gap-4"
                     >
                         <label className="flex flex-col gap-2">
                             Current password:

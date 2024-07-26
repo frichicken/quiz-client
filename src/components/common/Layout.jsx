@@ -66,12 +66,12 @@ function Layout() {
 
     return (
         <div className="w-full h-screen flex flex-col">
-            <nav className="flex justify-between border-b border-b-black gap-6 h-[67px] px-4 flex-shrink-0">
+            <nav className="flex justify-between border-b border-b-black gap-6 h-[67px] px-4 flex-shrink-0 relative">
                 <div className="flex items-center gap-3">
                     <Link className="underline cursor-pointer">
                         <Button>Home</Button>
                     </Link>
-                    <div className="relative h-full flex items-center">
+                    <div className="relative h-full flex items-center z-20">
                         <Button onClick={toggleYourLibraryDropdown}>Your library</Button>
                         {isYourLibraryDropdownOpen && (
                             <div className="absolute top-[calc(100%+8px)] right-[-8px] bg-white min-w-40 shadow-sm py-2 border border-solid border-black flex flex-col">

@@ -68,7 +68,7 @@ export default function Quiz({
                         event.stopPropagation();
                         navigate(`/accounts/${accountId}/quizzes/${id}/edit`);
                     }}
-                    className="flex-1"
+                    className="flex-1 text-nowrap"
                 >
                     Edit
                 </Button>
@@ -77,7 +77,7 @@ export default function Quiz({
                         event.stopPropagation();
                         onRemove(id);
                     }}
-                    className="flex-1"
+                    className="flex-1 text-nowrap"
                 >
                     Remove
                 </Button>
@@ -87,7 +87,7 @@ export default function Quiz({
                             event.stopPropagation();
                             onSave(id);
                         }}
-                        className="flex-1"
+                        className="flex-1 text-nowrap"
                     >
                         {isSaved ? 'Remove from saved' : 'Add to saved'}
                     </Button>

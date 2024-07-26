@@ -6,8 +6,10 @@ import Layout from 'components/common/Layout';
 import Setttings from 'components/common/Setttings';
 import YourLibraryLayout from 'components/common/YourLibraryLayout';
 import QuizDetails from 'components/quiz/QuizDetails';
-import QuizPlayground from 'components/quiz/QuizPlayground';
+import QuizLearn from 'components/quiz/QuizLearn';
+import QuizRunLayout from 'components/quiz/QuizRunLayout';
 import QuizSettings from 'components/quiz/QuizSettings';
+import QuizTest from 'components/quiz/QuizTest';
 import Quizzes from 'components/quiz/Quizzes';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import './index.css';
@@ -72,13 +74,29 @@ function App() {
                     path: 'accounts/:accountId/quizzes',
                     children: [
                         { path: ':quizId', element: <QuizDetails /> },
-                        { path: ':quizId/play', element: <QuizPlayground /> },
                         { path: ':quizId/edit', element: <QuizSettings /> }
                     ]
                 },
                 {
                     path: 'accounts/:accountId/collections',
                     children: [{ path: ':collectionId', element: <CollectionDetails /> }]
+                }
+            ]
+        },
+        {
+            element: (
+                <AuthenticationWrapper>
+                    <QuizRunLayout />
+                </AuthenticationWrapper>
+            ),
+            children: [
+                {
+                    path: 'accounts/:accountId/quizzes/:quizId/learn',
+                    element: <QuizLearn />
+                },
+                {
+                    path: 'accounts/:accountId/quizzes/:quizId/test',
+                    element: <QuizTest />
                 }
             ]
         }

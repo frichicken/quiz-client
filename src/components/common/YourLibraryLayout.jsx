@@ -1,41 +1,10 @@
-import { useState } from 'react';
-import { NavLink, Outlet, useNavigate, useParams } from 'react-router-dom';
-import { FetchStatuses } from 'utils/constants';
-import Button from './Button';
 import clsx from 'clsx';
+import { NavLink, Outlet, useParams } from 'react-router-dom';
+import Button from './Button';
 
 const YourLibraryLayout = () => {
-    const navigate = useNavigate();
     const { accountId } = useParams();
-    const [fetchStatus, setFetchStatus] = useState(FetchStatuses.None);
-
-    const handleCreateQuiz = () => {
-        setFetchStatus(FetchStatuses.Loading);
-        fetch(`http://localhost:5184/api/accounts/${accountId}/quizzes`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json'
-            },
-            body: JSON.stringify({
-                title: '',
-                description: ''
-            })
-        })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                }
-
-                Promise.reject(response);
-            })
-            .then(data => {
-                navigate(`/accounts/${accountId}/quizzes/${data.id}/edit`);
-            })
-            .catch(error => console.error(error))
-            .finally(() => setFetchStatus(FetchStatuses.None));
-    };
-
+    
     return (
         <div className="p-4 flex flex-col gap-4 flex-1 overflow-hidden">
             <div className="flex items-center justify-between gap-4 flex-wrap">

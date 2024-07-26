@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Button from './Button';
+import clsx from 'clsx';
 
 const Tabs = {
     Information: 1,
@@ -85,14 +86,17 @@ const Setttings = () => {
                     'Content-Type': 'application/json',
                     Accept: 'application/json'
                 },
-                body: JSON.stringify({...user, password: password.newPassword})
+                body: JSON.stringify({ ...user, password: password.newPassword })
             })
                 .then(response => {
                     if (response.ok) {
-                        localStorage.setItem('account', JSON.stringify({...user, password: password.newPassword}));
+                        localStorage.setItem(
+                            'account',
+                            JSON.stringify({ ...user, password: password.newPassword })
+                        );
                         return response;
                     }
-    
+
                     return Promise.reject(response);
                 })
                 .catch(error => console.error(error));
@@ -107,8 +111,18 @@ const Setttings = () => {
                 SETTINGS
             </h1>
             <div className="flex items-center gap-2">
-                <Button onClick={() => setCurrentTab(Tabs.Information)}>Infomation</Button>
-                <Button onClick={() => setCurrentTab(Tabs.AccountAndPrivacy)}>
+                <Button
+                    className={clsx(currentTab == Tabs.Information ? 'bg-black text-white' : '')}
+                    onClick={() => setCurrentTab(Tabs.Information)}
+                >
+                    Infomation
+                </Button>
+                <Button
+                    className={clsx(
+                        currentTab == Tabs.AccountAndPrivacy ? 'bg-black text-white' : ''
+                    )}
+                    onClick={() => setCurrentTab(Tabs.AccountAndPrivacy)}
+                >
                     Account and privacy
                 </Button>
             </div>
@@ -116,7 +130,7 @@ const Setttings = () => {
                 {currentTab == Tabs.Information && (
                     <form
                         onSubmit={event => event.preventDefault()}
-                        className="flex flex-col gap-4"
+                        className="flex flex-col gap-4 h-full"
                     >
                         <label className="flex flex-col gap-2">
                             Email:
@@ -168,13 +182,15 @@ const Setttings = () => {
                                 onChange={handleInputUser}
                             />
                         </label>
-                        <Button onClick={handleSaveUser}>Save</Button>
+                        <Button onClick={handleSaveUser} className="mt-auto">
+                            Save
+                        </Button>
                     </form>
                 )}
                 {currentTab == Tabs.AccountAndPrivacy && (
                     <form
                         onSubmit={event => event.preventDefault()}
-                        className="flex flex-col gap-4"
+                        className="flex flex-col gap-4 h-full"
                     >
                         <label className="flex flex-col gap-2">
                             Current password:
@@ -212,8 +228,10 @@ const Setttings = () => {
                             />
                             <p className="text-sm">{errors.confirmPassword}</p>
                         </label>
-                        <Button onClick={handleChangePassword}>Change password</Button>
-                        <Button>Delete account</Button>
+                        <div className="flex flex-col gap-4 mt-auto">
+                            <Button onClick={handleChangePassword}>Change password</Button>
+                            <Button>Delete account</Button>
+                        </div>
                     </form>
                 )}
             </div>

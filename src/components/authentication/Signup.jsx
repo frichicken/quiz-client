@@ -1,9 +1,10 @@
 import Button from 'components/common/Button';
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { FetchStatuses } from 'utils/constants';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { FetchStatuses, url } from 'utils/constants';
 
 const Signup = () => {
+    const user = JSON.parse(localStorage.getItem('account'));
     const [account, setAccount] = useState({
         email: '',
         password: '',
@@ -16,8 +17,8 @@ const Signup = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        document.title = "Sign up"
-    }, [])
+        document.title = 'Sign up';
+    }, []);
 
     const handleChange = event => {
         const { value, name } = event.target;
@@ -74,7 +75,7 @@ const Signup = () => {
         if (isValid) {
             // Call register endpoint
             setFetchStatus(FetchStatuses.Loading);
-            fetch('http://localhost:5184/sign-up', {
+            fetch(`${url}/sign-up`, {
                 headers: {
                     'Content-Type': 'application/json',
                     Accept: 'application/json'
@@ -113,80 +114,79 @@ const Signup = () => {
         });
     };
 
+    if (user) return <Navigate to={`/accounts/${user.id}/quizzes`} />;
+
     return (
-        <div className="w-full h-screen p-4 flex justify-center items-center">
-            <div className="w-full max-w-lg p-4 flex flex-col gap-2 border border-solid border-black">
-                {/* Switch mode but its not implemented */}
-                <Button>An evening person?</Button>
-                <form onSubmit={handleSubmit}>
-                    <fieldset className="flex flex-col gap-4 border border-solid border-black p-4">
-                        <legend>Sign up</legend>
-                        <label className="flex flex-col gap-2">
-                            Email:
-                            <input
-                                className="border border-solid border-black outline-none px-4 py-2"
-                                name="email"
-                                placeholder="We need your email, please"
-                                onChange={handleChange}
-                                value={account.email}
-                                onFocus={handleFocus}
-                            />
-                            <p className="text-sm">{errors.email}</p>
-                        </label>
-                        <div className="flex flex-col gap-2">
-                            <label className="flex flex-col gap-2">
-                                Password:
-                                <div className="flex items-center gap-2">
-                                    <input
-                                        className="flex-1 border border-solid border-black outline-none px-4 py-2"
-                                        name="password"
-                                        placeholder="It's our secret"
-                                        type={isPasswordVisible ? 'text' : 'password'}
-                                        onChange={handleChange}
-                                        value={account.password}
-                                        onFocus={handleFocus}
-                                    />
-                                    <Button className="min-w-36" onClick={togglePasswordVisibility}>
-                                        {isPasswordVisible ? 'Hide password' : 'Show password'}
-                                    </Button>
-                                </div>
-                                <p className="text-sm">{errors.password}</p>
-                            </label>
-                        </div>
-                        <label className="flex flex-col gap-2">
-                            Confirm password:
-                            <div className="flex items-center gap-2">
-                                <input
-                                    className="flex-1 border border-solid border-black outline-none px-4 py-2"
-                                    name="confirmPassword"
-                                    placeholder="Are you sure they are matched"
-                                    type={isConfirmPasswordVisible ? 'text' : 'password'}
-                                    onChange={handleChange}
-                                    value={account.confirmPassword}
-                                    onFocus={handleFocus}
-                                />
-                                <Button
-                                    className="min-w-36"
-                                    onClick={toggleConfirmPasswordVisibility}
-                                >
-                                    {isConfirmPasswordVisible ? 'Hide password' : 'Show password'}
-                                </Button>
-                            </div>
-                            <p className="text-sm">{errors.confirmPassword}</p>
-                        </label>
-                        <Button type="submit">
-                            {fetchStatus == FetchStatuses.Loading ? '...' : "Sign up"}
-                        </Button>
-                        <Link
-                            to="/log-in"
-                            className="underline cursor-pointer w-full text-center"
+        <form onSubmit={handleSubmit}>
+            <fieldset className="flex flex-col gap-4 border border-solid border-black p-4">
+                <legend>Sign up</legend>
+                <label className="flex flex-col gap-2">
+                    Email:
+                    <input
+                        className="border border-solid border-black outline-none px-4 py-2"
+                        name="email"
+                        placeholder="We need your email, please"
+                        onChange={handleChange}
+                        value={account.email}
+                        onFocus={handleFocus}
+                    />
+                    <p className="text-sm text-red-400">{errors.email}</p>
+                </label>
+                <label className="flex flex-col gap-2">
+                    Password:
+                    <div className="flex items-center gap-2">
+                        <input
+                            className="flex-1 border border-solid border-black outline-none px-4 py-2"
+                            name="password"
+                            placeholder="It's our secret"
+                            type={isPasswordVisible ? 'text' : 'password'}
+                            onChange={handleChange}
+                            value={account.password}
+                            onFocus={handleFocus}
+                        />
+                        <Button
+                            type="button"
+                            className="min-w-36"
+                            onClick={togglePasswordVisibility}
                         >
-                            Can&apos;t believe that you already have it?
-                        </Link>
-                    </fieldset>
-                </form>
-            </div>
-        </div>
+                            {isPasswordVisible ? 'Hide password' : 'Show password'}
+                        </Button>
+                    </div>
+                    <p className="text-sm text-red-400">{errors.password}</p>
+                </label>
+                <label className="flex flex-col gap-2">
+                    Confirm password:
+                    <div className="flex items-center gap-2">
+                        <input
+                            className="flex-1 border border-solid border-black outline-none px-4 py-2"
+                            name="confirmPassword"
+                            placeholder="Are you sure they are matched"
+                            type={isConfirmPasswordVisible ? 'text' : 'password'}
+                            onChange={handleChange}
+                            value={account.confirmPassword}
+                            onFocus={handleFocus}
+                        />
+                        <Button
+                            type="button"
+                            className="min-w-36"
+                            onClick={toggleConfirmPasswordVisibility}
+                        >
+                            {isConfirmPasswordVisible ? 'Hide password' : 'Show password'}
+                        </Button>
+                    </div>
+                    <p className="text-sm text-red-400">{errors.confirmPassword}</p>
+                </label>
+                <Button className="bg-black text-white" type="submit">
+                    {fetchStatus == FetchStatuses.Loading ? '...' : 'Sign up'}
+                </Button>
+                <p className='flex items-center justify-center gap-1'>
+                    Already have an account?
+                    <Link to="/log-in" className="underline cursor-pointer text-center">
+                        Log in
+                    </Link>
+                </p>
+            </fieldset>
+        </form>
     );
 };
 

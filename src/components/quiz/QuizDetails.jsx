@@ -2,33 +2,27 @@ import clsx from 'clsx';
 import Button from 'components/common/Button';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { FetchStatuses, QuizStatuses } from 'utils/constants';
+import { FetchStatuses, QuestionTabs, QuizStatuses, url } from 'utils/constants';
 import AddToCollectionModal from './AddToCollectionModal';
-
-const QuestionTabs = {
-    All: 0,
-    Starred: 1
-};
 
 const QuizDetails = () => {
     const { accountId, quizId } = useParams();
-    const [quizFetchStatus, setQuizFetchStatus] = useState(FetchStatuses.None);
+    const navigate = useNavigate();
     const [quiz, setQuiz] = useState({
         title: '',
         description: '',
         status: null,
         questions: []
     });
-    const [deleteQuizFetchStatus, setDeleteQuizFetchStatus] = useState(FetchStatuses.None);
+    const [fetchStatus, setFetchStatus] = useState(FetchStatuses.None);
     const [areCorrectAnswersShowed, setAreCorrectAnswersShowed] = useState(false);
-    const navigate = useNavigate();
     const [isMenuDropdownOpen, setIsMenuDropdown] = useState(false);
     const [currentQuestionTab, setCurrentQuestionTab] = useState(QuestionTabs.All);
     const [isAddToCollectionModalOpen, setIsAddToCollectionModalOpen] = useState(false);
 
     useEffect(() => {
-        setQuizFetchStatus(FetchStatuses.Loading);
-        fetch(`http://localhost:5184/api/accounts/${accountId}/quizzes/${quizId}/details`, {
+        setFetchStatus(FetchStatuses.Loading);
+        fetch(`${url}/api/accounts/${accountId}/quizzes/${quizId}/details`, {
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json'
@@ -45,12 +39,11 @@ const QuizDetails = () => {
                 setQuiz(data);
             })
             .catch(error => console.error(error))
-            .finally(() => setQuizFetchStatus(FetchStatuses.None));
+            .finally(() => setFetchStatus(FetchStatuses.None));
     }, [accountId, quizId]);
 
-    const handleDeleteQuiz = () => {
-        setDeleteQuizFetchStatus(FetchStatuses.Loading);
-        fetch(`http://localhost:5184/api/accounts/${accountId}/quizzes/${quizId}`, {
+    const handleRemove = () => {
+        fetch(`${url}/api/accounts/${accountId}/quizzes/${quizId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -64,12 +57,11 @@ const QuizDetails = () => {
 
                 Promise.reject(response);
             })
-            .catch(error => console.error(error))
-            .finally(() => setDeleteQuizFetchStatus(FetchStatuses.None));
+            .catch(error => console.error(error));
     };
 
-    const toggleSaveQuiz = () => {
-        fetch(`http://localhost:5184/api/accounts/${accountId}/quizzes/${quizId}`, {
+    const handleSave = () => {
+        fetch(`${url}/api/accounts/${accountId}/quizzes/${quizId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -96,11 +88,12 @@ const QuizDetails = () => {
             .finally(() => toggleMenuDropdown());
     };
 
-    const toggleStarQuestion = id => {
+    const handleStarQuestion = id => {
         const { questions = [] } = quiz;
-        const targetQuestion = questions.find(it => it.id == id);
+        const question = questions.find(it => it.id == id);
+        question.isStarred = question.isStarred ? false : true;
 
-        fetch(`http://localhost:5184/api/quizzes/${quizId}/questions/${id}`, {
+        fetch(`${url}/api/quizzes/${quizId}/questions/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -108,14 +101,13 @@ const QuizDetails = () => {
             },
             body: JSON.stringify({
                 id,
-                text: targetQuestion.text,
-                isStarred: targetQuestion.isStarred ? false : true
+                text: question.text,
+                isStarred: question.isStarred
             })
         })
             .then(response => {
                 if (response.ok) {
-                    targetQuestion.isStarred = targetQuestion.isStarred ? false : true;
-                    const newQuestions = questions.map(it => (it.id == id ? targetQuestion : it));
+                    const newQuestions = questions.map(it => (it.id == id ? question : it));
 
                     setQuiz({ ...quiz, questions: newQuestions });
                     return response;
@@ -128,13 +120,13 @@ const QuizDetails = () => {
 
     const handleChangeTab = value => setCurrentQuestionTab(value);
 
+    const handleOpenAddToCollectionModal = () => setIsAddToCollectionModalOpen(true);
+
+    const handleCloseAddToCollectionModal = () => setIsAddToCollectionModalOpen(false);
+
     const toggleMenuDropdown = () => setIsMenuDropdown(isMenuDropdownOpen ? false : true);
 
-    const openAddToCollectionModal = () => setIsAddToCollectionModalOpen(true);
-
-    const closeAddToCollectionModal = () => setIsAddToCollectionModalOpen(false);
-
-    if (quizFetchStatus == FetchStatuses.Loading)
+    if (fetchStatus == FetchStatuses.Loading)
         return <div className="w-full flex-1 flex justify-center items-center p-4">Spining...</div>;
 
     const starredQuestions = quiz.questions.filter(it => it.isStarred);
@@ -170,14 +162,12 @@ const QuizDetails = () => {
                                     </Link>
                                     <Button
                                         className="w-full border-none text-left"
-                                        onClick={handleDeleteQuiz}
+                                        onClick={handleRemove}
                                     >
-                                        {deleteQuizFetchStatus == FetchStatuses.Loading
-                                            ? 'Spining...'
-                                            : 'Remove'}
+                                        Remove
                                     </Button>
                                     <Button
-                                        onClick={toggleSaveQuiz}
+                                        onClick={handleSave}
                                         className="w-full text-nowrap border-none text-left"
                                     >
                                         {quiz.isSaved ? 'Remove from saved' : 'Add to saved'}
@@ -186,7 +176,7 @@ const QuizDetails = () => {
                                         className="w-full border-none text-left"
                                         onClick={() => {
                                             toggleMenuDropdown();
-                                            openAddToCollectionModal();
+                                            handleOpenAddToCollectionModal();
                                         }}
                                     >
                                         Add to collection
@@ -250,7 +240,7 @@ const QuizDetails = () => {
                                 <p className="flex items-center gap-2">
                                     {index + 1}/<p>{text}</p>
                                 </p>
-                                <Button onClick={() => toggleStarQuestion(id)}>
+                                <Button onClick={() => handleStarQuestion(id)}>
                                     {isStarred ? 'Unstar' : 'Star'}
                                 </Button>
                             </div>
@@ -278,7 +268,7 @@ const QuizDetails = () => {
                 })}
             </div>
             {isAddToCollectionModalOpen && (
-                <AddToCollectionModal onClose={closeAddToCollectionModal} />
+                <AddToCollectionModal onClose={handleCloseAddToCollectionModal} />
             )}
         </>
     );

@@ -54,7 +54,7 @@ const QuizSettings = () => {
     }, [account.id, quizId]);
 
     // Handle quizzes
-    const handleInputQuizDebounce = debounce(event => {
+    const handleInputQuiz = debounce(event => {
         const { value, name } = event.target;
 
         const newQuiz = {
@@ -471,7 +471,7 @@ const QuizSettings = () => {
                                 name="title"
                                 placeholder="Titled this quiz, please"
                                 defaultValue={quiz.title}
-                                onChange={handleInputQuizDebounce}
+                                onChange={handleInputQuiz}
                             />
                         </label>
                         <label className="flex flex-col gap-2">
@@ -481,7 +481,7 @@ const QuizSettings = () => {
                                 name="description"
                                 placeholder="Give it some descriptive words"
                                 defaultValue={quiz.description}
-                                onChange={handleInputQuizDebounce}
+                                onChange={handleInputQuiz}
                             />
                         </label>
                     </div>

@@ -80,9 +80,13 @@ function QuizTest() {
         setIsCorrectAnswerShowed(true);
     };
 
-    const hanldeJumpToQuestion = (index) => {
-        questionRefs.current[index].scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-    }
+    const hanldeJumpToQuestion = index => {
+        questionRefs.current[index].scrollIntoView({
+            behavior: 'smooth',
+            block: 'end',
+            inline: 'nearest'
+        });
+    };
 
     if (quizFetchStatus == FetchStatuses.Loading)
         return <div className="w-full flex-1 flex justify-center items-center p-2">Spining...</div>;
@@ -94,7 +98,11 @@ function QuizTest() {
                 <div className="flex flex-col">
                     {questionsWithChosenAnswers.map((_, index) => {
                         return (
-                            <p key={index} onClick={() => hanldeJumpToQuestion(index)} className="p-1 cursor-pointer">
+                            <p
+                                key={index}
+                                onClick={() => hanldeJumpToQuestion(index)}
+                                className="p-1 cursor-pointer"
+                            >
                                 {index + 1}
                             </p>
                         );
@@ -133,14 +141,19 @@ function QuizTest() {
                                                     ? '!bg-black text-white'
                                                     : '',
                                                 isCorrectAnswersShowed &&
-                                                    ((isCorrect == true && isChosen == false) ||
-                                                        (isChosen == true && isCorrect == false))
+                                                    isChosen == true &&
+                                                    isCorrect == false
                                                     ? '!bg-red-200'
                                                     : '',
                                                 isCorrectAnswersShowed &&
                                                     isCorrect == true &&
                                                     isChosen == true
                                                     ? '!bg-green-200'
+                                                    : '',
+                                                isCorrectAnswersShowed &&
+                                                    isCorrect == true &&
+                                                    isChosen == false
+                                                    ? '!bg-gray-300'
                                                     : ''
                                             )}
                                             style={{}}
@@ -155,7 +168,13 @@ function QuizTest() {
                 })}
             </div>
             <div className="max-w-5xl w-full p-4 flex justify-end mt-auto border border-solid border-black border-b-none">
-                <Button onClick={() => {handleCheckCorrectAnswers()}}>Submit</Button>
+                <Button
+                    onClick={() => {
+                        handleCheckCorrectAnswers();
+                    }}
+                >
+                    Submit
+                </Button>
             </div>
         </div>
     );

@@ -21,3 +21,11 @@ export const FilterTexts = {
     [FilterTypes.Recent]: "Recent",
     [FilterTypes.Saved]: "Saved"
 }
+
+export const QuestionTabs = {
+    All: 0,
+    Starred: 1
+};
+
+
+export const url = "http://localhost:5184"

@@ -1,31 +1,32 @@
 import Button from 'components/common/Button';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { FetchStatuses, FilterTexts, FilterTypes, QuizStatuses } from 'utils/constants';
+import { FetchStatuses, FilterTexts, FilterTypes, QuizStatuses, url } from 'utils/constants';
 import Quiz from './Quiz';
 
 function Quizzes() {
+    const { accountId } = useParams();
     const [quizzes, setQuizzes] = useState([]);
     const [fetchStatus, setFetchStatus] = useState(FetchStatuses.None);
     const [isFilterDropdownOpen, setIsFilterDropdown] = useState(false);
     const [currentFilter, setCurrentFilter] = useState(FilterTypes.Recent);
     const [keyword, setKeyword] = useState('');
-    const { accountId } = useParams();
 
     useEffect(() => {
         setFetchStatus(FetchStatuses.Loading);
-        fetch(`http://localhost:5184/api/accounts/${accountId}/quizzes`)
+        fetch(`${url}/api/accounts/${accountId}/quizzes`)
             .then(response => response.json())
             .then(data => setQuizzes(data))
             .catch(error => console.error(error))
             .finally(() => setFetchStatus(FetchStatuses.None));
     }, [accountId]);
 
-    const handleRemoveQuiz = quizId => {
-        const quiz = quizzes.find(it => it.id == quizId);
+    const handleRemoveQuiz = id => {
+        const quiz = quizzes.find(it => it.id == id);
         quiz.fetchStatus = FetchStatuses.Loading;
-        setQuizzes(quizzes.map(it => (it.id == quizId ? quiz : it)));
-        fetch(`http://localhost:5184/api/accounts/${accountId}/quizzes/${quizId}`, {
+        setQuizzes(quizzes.map(it => (it.id == id ? quiz : it)));
+
+        fetch(`${url}/api/accounts/${accountId}/quizzes/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -34,7 +35,7 @@ function Quizzes() {
         })
             .then(response => {
                 if (response.ok) {
-                    setQuizzes(quizzes.filter(quiz => quiz.id != quizId));
+                    setQuizzes(quizzes.filter(quiz => quiz.id != id));
                 }
 
                 Promise.reject(response);
@@ -42,26 +43,28 @@ function Quizzes() {
             .catch(error => console.error(error));
     };
 
-    const toggleSaveQuiz = quizId => {
-        const quiz = quizzes.find(it => it.id == quizId);
-        fetch(`http://localhost:5184/api/accounts/${accountId}/quizzes/${quizId}`, {
+    const handleSaveQuiz = id => {
+        const quiz = quizzes.find(it => it.id == id);
+        quiz.isSaved = quiz.isSaved ? false : true;
+
+        fetch(`${url}/api/accounts/${accountId}/quizzes/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json'
             },
             body: JSON.stringify({
-                id: quizId,
+                id,
                 title: quiz.title,
                 description: quiz.description,
                 status: quiz.status,
-                isSaved: quiz.isSaved ? false : true
+                isSaved: quiz.isSaved
             })
         })
             .then(response => {
                 if (response.ok) {
-                    quiz.isSaved = quiz.isSaved ? false : true;
-                    setQuizzes(quizzes.map(it => (it.id == quizId ? quiz : it)));
+                    setQuizzes(quizzes.map(it => (it.id == id ? quiz : it)));
+
                     return response;
                 }
 
@@ -70,17 +73,23 @@ function Quizzes() {
             .catch(error => console.error(error));
     };
 
-    const toggleFilterDropdown = () => setIsFilterDropdown(isFilterDropdownOpen ? false : true);
-
     const handleKeywordChange = event => {
         setKeyword(event.target.value);
     };
 
-    const drafts = quizzes.filter(
+    const handleSelectFilter = value => {
+        toggleFilterDropdown();
+        setCurrentFilter(value);
+    };
+
+    const toggleFilterDropdown = () => setIsFilterDropdown(isFilterDropdownOpen ? false : true);
+
+    const draftQuizzes = quizzes.filter(
         it =>
             it.status == QuizStatuses.Draft &&
             it.title.toLowerCase().trim().includes(keyword.toLowerCase().trim())
     );
+
     let publishedQuizzes = quizzes.filter(
         it =>
             it.status == QuizStatuses.Published &&
@@ -88,10 +97,6 @@ function Quizzes() {
     );
 
     if (currentFilter == FilterTypes.Saved) publishedQuizzes = quizzes.filter(it => it.isSaved);
-
-    const handleSelectFilter = value => {
-        setCurrentFilter(value);
-    };
 
     return (
         <div className="flex flex-col gap-2 w-full">
@@ -103,7 +108,6 @@ function Quizzes() {
                             <Button
                                 className="w-full border-none text-left"
                                 onClick={() => {
-                                    toggleFilterDropdown();
                                     handleSelectFilter(FilterTypes.Recent);
                                 }}
                             >
@@ -112,7 +116,6 @@ function Quizzes() {
                             <Button
                                 className="w-full border-none text-left"
                                 onClick={() => {
-                                    toggleFilterDropdown();
                                     handleSelectFilter(FilterTypes.Draft);
                                 }}
                             >
@@ -121,7 +124,6 @@ function Quizzes() {
                             <Button
                                 className="w-full border-none text-left"
                                 onClick={() => {
-                                    toggleFilterDropdown();
                                     handleSelectFilter(FilterTypes.Published);
                                 }}
                             >
@@ -130,7 +132,6 @@ function Quizzes() {
                             <Button
                                 className="w-full border-none text-left"
                                 onClick={() => {
-                                    toggleFilterDropdown();
                                     handleSelectFilter(FilterTypes.Saved);
                                 }}
                             >
@@ -150,40 +151,44 @@ function Quizzes() {
                 <div className="w-full flex-1 flex justify-center items-center p-2">Spining...</div>
             ) : (
                 <div className="flex flex-col flex-1 gap-2 w-full overflow-y-auto">
-                    {drafts.length > 0 && (currentFilter == FilterTypes.Recent ||
-                        currentFilter == FilterTypes.Draft) && (
-                        <>
-                            <p>In progress</p>
-                            <div className="w-full flex flex-col gap-4 p-2">
-                                {drafts.map(quiz => {
-                                    const { id } = quiz;
+                    {draftQuizzes.length > 0 &&
+                        (currentFilter == FilterTypes.Recent ||
+                            currentFilter == FilterTypes.Draft) && (
+                            <>
+                                <p>In progress</p>
+                                <div className="w-full flex flex-col gap-4 p-2">
+                                    {draftQuizzes.map(quiz => {
+                                        const { id } = quiz;
 
-                                    return <Quiz onRemove={handleRemoveQuiz} key={id} {...quiz} />;
-                                })}
-                            </div>
-                        </>
-                    )}
-                    {publishedQuizzes.length > 0 && (currentFilter == FilterTypes.Recent ||
-                        currentFilter == FilterTypes.Published ||
-                        currentFilter == FilterTypes.Saved) && (
-                        <>
-                            <p>Published</p>
-                            <div className="w-full flex flex-col gap-4 p-2">
-                                {publishedQuizzes.map(quiz => {
-                                    const { id } = quiz;
+                                        return (
+                                            <Quiz key={id} onRemove={handleRemoveQuiz} {...quiz} />
+                                        );
+                                    })}
+                                </div>
+                            </>
+                        )}
+                    {publishedQuizzes.length > 0 &&
+                        (currentFilter == FilterTypes.Recent ||
+                            currentFilter == FilterTypes.Published ||
+                            currentFilter == FilterTypes.Saved) && (
+                            <>
+                                <p>Published</p>
+                                <div className="w-full flex flex-col gap-4 p-2">
+                                    {publishedQuizzes.map(quiz => {
+                                        const { id } = quiz;
 
-                                    return (
-                                        <Quiz
-                                            onSave={toggleSaveQuiz}
-                                            onRemove={handleRemoveQuiz}
-                                            key={id}
-                                            {...quiz}
-                                        />
-                                    );
-                                })}
-                            </div>
-                        </>
-                    )}
+                                        return (
+                                            <Quiz
+                                                key={id}
+                                                onSave={handleSaveQuiz}
+                                                onRemove={handleRemoveQuiz}
+                                                {...quiz}
+                                            />
+                                        );
+                                    })}
+                                </div>
+                            </>
+                        )}
                 </div>
             )}
         </div>

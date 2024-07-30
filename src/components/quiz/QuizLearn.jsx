@@ -49,7 +49,9 @@ function QuizLearn() {
         const question = quiz.questions[currentQuestionIndex];
         const correctAnswersIds = question.answers.filter(it => it.isCorrect).map(it => it.id);
 
-        if (correctAnswersIds.every(it => chosenAnswerIds.indexOf(it) != -1))
+        if (chosenAnswerIds.length != correctAnswersIds.length) return;
+
+        if (chosenAnswerIds.every(it => correctAnswersIds.indexOf(it) != -1))
             setCorrectAnswers(correctAnswers + 1);
     };
 
@@ -154,14 +156,17 @@ function QuizLearn() {
                                                     isSubmited &&
                                                         chosenAnswerIds.indexOf(id) != -1 &&
                                                         isCorrect
-                                                        ? 'bg-green-200 text-black'
+                                                        ? 'bg-green-200 !text-black'
                                                         : '',
                                                     isSubmited &&
-                                                        ((chosenAnswerIds.indexOf(id) != -1 &&
-                                                            !isCorrect) ||
-                                                            (chosenAnswerIds.indexOf(id) == -1 &&
-                                                                isCorrect))
-                                                        ? 'bg-red-300 text-black'
+                                                        chosenAnswerIds.indexOf(id) != -1 &&
+                                                        !isCorrect
+                                                        ? 'bg-red-300 !text-black'
+                                                        : '',
+                                                    isSubmited &&
+                                                        chosenAnswerIds.indexOf(id) == -1 &&
+                                                        isCorrect
+                                                        ? 'bg-gray-300 !text-black'
                                                         : ''
                                                 )}
                                                 key={id}

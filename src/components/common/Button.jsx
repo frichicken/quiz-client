@@ -4,7 +4,7 @@ const Button = ({ children, className, onClick, type, disabled, ...others }) => 
     return (
         <button
             className={clsx(
-                'hover:bg-black hover:text-white transition-colors px-4 py-2 border border-solid border-black flex-shrink-0',
+                'hover:!bg-black hover:!text-white transition-colors px-4 py-2 border border-solid border-black flex-shrink-0',
                 className
             )}
             {...others}

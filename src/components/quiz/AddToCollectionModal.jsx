@@ -1,7 +1,7 @@
 import Button from 'components/common/Button';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { FetchStatuses } from 'utils/constants';
+import { FetchStatuses, url } from 'utils/constants';
 
 const AddToCollectionModal = ({ onClose = () => {} }) => {
     const [fetchStatus, setFetchStatus] = useState(FetchStatuses.None);
@@ -11,7 +11,7 @@ const AddToCollectionModal = ({ onClose = () => {} }) => {
 
     useEffect(() => {
         setFetchStatus(FetchStatuses.Loading);
-        fetch(`http://localhost:5184/api/accounts/${accountId}/collections`)
+        fetch(`${url}/api/accounts/${accountId}/collections`)
             .then(response => response.json())
             .then(data => setCollections(data))
             .catch(error => console.error(error))

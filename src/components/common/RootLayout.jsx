@@ -2,7 +2,7 @@ import { Link, Outlet, useNavigate } from 'react-router-dom';
 import Button from './Button';
 import { useState } from 'react';
 
-function Layout() {
+function RootLayout() {
     const account = JSON.parse(localStorage.getItem('account'));
     const [isCreateDropdownOpen, setIsCreateDropdownOpen] = useState(false);
     const [isYourLibraryDropdownOpen, setIsYourLibraryDropdownOpen] = useState(false);
@@ -58,7 +58,7 @@ function Layout() {
                 Promise.reject(response);
             })
             .then(data => {
-                navigate(`/accounts/${account.id}/collections/${data.id}/edit`);
+                navigate(`/accounts/${account.id}/collections/${data.id}`);
             })
             .catch(error => console.error(error))
             .finally(() => toggleCreateDropdown());
@@ -127,15 +127,15 @@ function Layout() {
                     <Link to="/settings" className="underline cursor-pointer">
                         <Button>Settings</Button>
                     </Link>
+                    <Link to="/terms-and-policies" className="underline cursor-pointer">
+                        <Button>Terms and policies</Button>
+                    </Link>
                     <Link
                         to="/log-in"
                         onClick={() => localStorage.setItem('account', JSON.stringify(null))}
                         className="underline cursor-pointer"
                     >
                         <Button>Log out</Button>
-                    </Link>
-                    <Link to="/terms-and-policies" className="underline cursor-pointer">
-                        <Button>Terms and policies</Button>
                     </Link>
                 </div>
             </nav>
@@ -144,4 +144,4 @@ function Layout() {
     );
 }
 
-export default Layout;
+export default RootLayout;

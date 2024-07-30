@@ -1,8 +1,10 @@
+import AuthenticationLayout from 'components/authentication/AuthenticationLayout';
 import Login from 'components/authentication/Login';
 import Signup from 'components/authentication/Signup';
 import CollectionDetails from 'components/collection/CollectionDetails';
 import Collections from 'components/collection/Collections';
-import Layout from 'components/common/Layout';
+import ProtectedRoute from 'components/common/ProtectedRoute';
+import RootLayout from 'components/common/RootLayout';
 import Setttings from 'components/common/Setttings';
 import YourLibraryLayout from 'components/common/YourLibraryLayout';
 import QuizDetails from 'components/quiz/QuizDetails';
@@ -11,46 +13,29 @@ import QuizRunLayout from 'components/quiz/QuizRunLayout';
 import QuizSettings from 'components/quiz/QuizSettings';
 import QuizTest from 'components/quiz/QuizTest';
 import Quizzes from 'components/quiz/Quizzes';
-import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './index.css';
-
-const AuthenticationWrapper = ({ children, isAuthenticationPage = false }) => {
-    const account = JSON.parse(localStorage.getItem('account'));
-
-    if (isAuthenticationPage) {
-        if (account) return <Navigate to={`/accounts/${account.id}/quizzes`} />;
-
-        return children;
-    } else {
-        if (account) return children;
-
-        return <Navigate to="/log-in" />;
-    }
-};
 
 function App() {
     const router = createBrowserRouter([
         {
-            path: '/log-in',
-            element: (
-                <AuthenticationWrapper isAuthenticationPage>
-                    <Login />
-                </AuthenticationWrapper>
-            )
-        },
-        {
-            path: '/sign-up',
-            element: (
-                <AuthenticationWrapper isAuthenticationPage>
-                    <Signup />
-                </AuthenticationWrapper>
-            )
+            element: <AuthenticationLayout />,
+            children: [
+                {
+                    path: '/log-in',
+                    element: <Login />
+                },
+                {
+                    path: '/sign-up',
+                    element: <Signup />
+                }
+            ]
         },
         {
             element: (
-                <AuthenticationWrapper>
-                    <Layout />
-                </AuthenticationWrapper>
+                <ProtectedRoute>
+                    <RootLayout />
+                </ProtectedRoute>
             ),
             children: [
                 {
@@ -58,11 +43,11 @@ function App() {
                     children: [
                         {
                             path: 'accounts/:accountId/quizzes',
-                            children: [{ index: true, element: <Quizzes /> }]
+                            element: <Quizzes />
                         },
                         {
                             path: 'accounts/:accountId/collections',
-                            children: [{ index: true, element: <Collections /> }]
+                            element: <Collections />
                         }
                     ]
                 },
@@ -85,9 +70,9 @@ function App() {
         },
         {
             element: (
-                <AuthenticationWrapper>
+                <ProtectedRoute>
                     <QuizRunLayout />
-                </AuthenticationWrapper>
+                </ProtectedRoute>
             ),
             children: [
                 {

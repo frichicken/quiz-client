@@ -66,15 +66,18 @@ function RootLayout() {
 
     return (
         <div className="w-full h-screen flex flex-col">
-            <nav className="flex justify-between border-b border-b-black gap-6 h-[67px] px-4 flex-shrink-0 relative">
-                <div className="flex items-center gap-3">
-                    <Link className="underline cursor-pointer">
-                        <Button>Home</Button>
-                    </Link>
+            <nav className="flex justify-between gap-6 h-[67px] px-4 flex-shrink-0 self-start top-0 sticky w-full bg-white z-10">
+                <div className="flex items-center gap-5">
+                    <Link className="hover:underline cursor-pointer">Home</Link>
                     <div className="relative h-full flex items-center z-20">
-                        <Button onClick={toggleYourLibraryDropdown}>Your library</Button>
+                        <p
+                            className="hover:underline cursor-pointer"
+                            onClick={toggleYourLibraryDropdown}
+                        >
+                            Your library
+                        </p>
                         {isYourLibraryDropdownOpen && (
-                            <div className="absolute top-[calc(100%+8px)] right-[-8px] bg-white min-w-40 shadow-sm py-2 border border-solid border-black flex flex-col">
+                            <div className="absolute top-[calc(100%)] left-1/2 -translate-x-1/2 bg-white min-w-40 shadow-sm py-2 border border-solid border-neutral-600 flex flex-col">
                                 <Button
                                     className="w-full border-none text-left"
                                     onClick={() => {
@@ -99,16 +102,21 @@ function RootLayout() {
                 </div>
                 <div className="flex items-center flex-1 mx-auto">
                     <input
-                        className="border border-solid border-black outline-none px-4 py-2 w-full"
+                        className="border border-solid border-neutral-600 outline-none px-4 py-2 w-full"
                         name="keyword"
-                        placeholder="Your grandma is going to check your search history"
+                        placeholder="Search anything..."
                     />
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-5">
                     <div className="relative h-full flex items-center">
-                        <Button onClick={toggleCreateDropdown}>Create</Button>
+                        <p
+                            className="hover:underline cursor-pointer"
+                            onClick={toggleCreateDropdown}
+                        >
+                            Create
+                        </p>
                         {isCreateDropdownOpen && (
-                            <div className="absolute top-[calc(100%+8px)] right-[-8px] bg-white min-w-40 shadow-sm py-2 border border-solid border-black flex flex-col">
+                            <div className="absolute top-[calc(100%)] left-1/2 -translate-x-1/2 bg-white min-w-40 shadow-sm py-2 border border-solid border-black flex flex-col">
                                 <Button
                                     className="w-full border-none text-left"
                                     onClick={handleCreateQuiz}
@@ -124,18 +132,24 @@ function RootLayout() {
                             </div>
                         )}
                     </div>
-                    <Link to="/settings" className="underline cursor-pointer">
-                        <Button>Settings</Button>
+                    <Link
+                        to="/settings"
+                        className="hover:underline cursor-pointer"
+                    >
+                        Settings
                     </Link>
-                    <Link to="/terms-and-policies" className="underline cursor-pointer">
-                        <Button>Terms and policies</Button>
+                    <Link
+                        to="/terms-and-policies"
+                        className="hover:underline cursor-pointer"
+                    >
+                        Terms and policies
                     </Link>
                     <Link
                         to="/log-in"
                         onClick={() => localStorage.setItem('account', JSON.stringify(null))}
-                        className="underline cursor-pointer"
+                        className="hover:underline cursor-pointer"
                     >
-                        <Button>Log out</Button>
+                        Log out
                     </Link>
                 </div>
             </nav>

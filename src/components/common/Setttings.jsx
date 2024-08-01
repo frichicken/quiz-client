@@ -182,7 +182,7 @@ const Setttings = () => {
                                 onChange={handleInputUser}
                             />
                         </label>
-                        <Button onClick={handleSaveUser} className="mt-auto">
+                        <Button onClick={handleSaveUser} className="mt-auto w-fit">
                             Save
                         </Button>
                     </form>
@@ -228,7 +228,7 @@ const Setttings = () => {
                             />
                             <p className="text-sm">{errors.confirmPassword}</p>
                         </label>
-                        <div className="flex flex-col gap-4 mt-auto">
+                        <div className="flex gap-4 mt-auto">
                             <Button onClick={handleChangePassword}>Change password</Button>
                             <Button>Delete account</Button>
                         </div>

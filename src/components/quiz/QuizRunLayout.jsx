@@ -11,7 +11,7 @@ function QuizRunLayout() {
 
     return (
         <div className="w-full h-screen flex flex-col">
-            <nav className="flex justify-between border-b border-b-black gap-6 h-[67px] px-4 flex-shrink-0 relative z-10">
+            <nav className="flex justify-between border-b border-b-black gap-6 h-[67px] px-4 flex-shrink-0 self-start top-0 sticky w-full bg-white z-10">
                 <div className="relative h-full flex items-center">
                     <Button onClick={toggleCreateDropdown}>Mode</Button>
                     {isModeDropdownOpen && (

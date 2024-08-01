@@ -27,7 +27,7 @@ export default function Quiz({
         >
             <div className="flex-1 w-full">
                 <p>{title}</p>
-                <p className="text-sm line-clamp-2">{description}</p>
+                <p className="text-sm line-clamp-2 font-sans">{description}</p>
                 <div className="flex items-center gap-1 mt-2">
                     <div className="px-2 py-1 border border-solid border-black text-sm flex-shrink-0">
                         {totalQuestions} Questions
@@ -48,7 +48,6 @@ export default function Quiz({
                                 event.stopPropagation();
                                 navigate(`/accounts/${accountId}/quizzes/${id}/learn`);
                             }}
-                            className="flex-1"
                         >
                             Learn
                         </Button>
@@ -57,7 +56,6 @@ export default function Quiz({
                                 event.stopPropagation();
                                 navigate(`/accounts/${accountId}/quizzes/${id}/test`);
                             }}
-                            className="flex-1"
                         >
                             Test
                         </Button>
@@ -68,7 +66,7 @@ export default function Quiz({
                         event.stopPropagation();
                         navigate(`/accounts/${accountId}/quizzes/${id}/edit`);
                     }}
-                    className="flex-1 text-nowrap"
+                    className="text-nowrap"
                 >
                     Edit
                 </Button>
@@ -77,7 +75,7 @@ export default function Quiz({
                         event.stopPropagation();
                         onRemove(id);
                     }}
-                    className="flex-1 text-nowrap"
+                    className="text-nowrap"
                 >
                     Remove
                 </Button>
@@ -87,7 +85,7 @@ export default function Quiz({
                             event.stopPropagation();
                             onSave(id);
                         }}
-                        className="flex-1 text-nowrap"
+                        className="text-nowrap"
                     >
                         {isSaved ? 'Remove from saved' : 'Add to saved'}
                     </Button>

@@ -99,7 +99,7 @@ function Quizzes() {
     if (currentFilter == FilterTypes.Saved) publishedQuizzes = quizzes.filter(it => it.isSaved);
 
     return (
-        <div className="flex flex-col gap-2 w-full">
+        <div className="flex flex-col gap-4 w-full">
             <div className="flex items-center justify-between">
                 <div className="relative h-full flex items-center">
                     <Button onClick={toggleFilterDropdown}>{FilterTexts[currentFilter]}</Button>
@@ -143,7 +143,7 @@ function Quizzes() {
                 <input
                     className="border border-solid border-black outline-none px-4 py-2 min-w-[28rem]"
                     name="keyword"
-                    placeholder="Your grandma is going to check your search history"
+                    placeholder="Search for quizzes"
                     onChange={handleKeywordChange}
                 />
             </div>

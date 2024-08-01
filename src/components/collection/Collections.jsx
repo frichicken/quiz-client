@@ -7,7 +7,6 @@ function Collections() {
     const [collections, setCollections] = useState([]);
     const [fetchStatus, setFetchStatus] = useState(FetchStatuses.None);
     const { accountId } = useParams();
-    const [isFilterDropdownOpen, setIsFilterDropdown] = useState(false);
     const navigate = useNavigate();
     const [keyword, setKeyword] = useState('');
 
@@ -44,54 +43,13 @@ function Collections() {
         setKeyword(event.target.value);
     };
 
-    const toggleFilterDropdown = () => setIsFilterDropdown(isFilterDropdownOpen ? false : true);
-
     return (
-        <div className="flex flex-col gap-2 w-full">
+        <div className="flex flex-col gap-4 w-full">
             <div className="flex items-center justify-end">
-                {/* <div className="relative h-full flex items-center">
-                    <Button onClick={toggleFilterDropdown}>Recent</Button>
-                    {isFilterDropdownOpen && (
-                        <div className="absolute top-[calc(100%+8px)] left-[0] bg-white min-w-40 shadow-sm py-2 border border-solid border-black flex flex-col">
-                            <Button
-                                className="w-full border-none text-left"
-                                onClick={() => {
-                                    toggleFilterDropdown();
-                                }}
-                            >
-                                Recent
-                            </Button>
-                            <Button
-                                className="w-full border-none text-left"
-                                onClick={() => {
-                                    toggleFilterDropdown();
-                                }}
-                            >
-                                Draft
-                            </Button>
-                            <Button
-                                className="w-full border-none text-left"
-                                onClick={() => {
-                                    toggleFilterDropdown();
-                                }}
-                            >
-                                Published
-                            </Button>
-                            <Button
-                                className="w-full border-none text-left"
-                                onClick={() => {
-                                    toggleFilterDropdown();
-                                }}
-                            >
-                                Saved
-                            </Button>
-                        </div>
-                    )}
-                </div> */}
                 <input
                     className="border border-solid border-black outline-none px-4 py-2 min-w-[28rem]"
                     name="keyword"
-                    placeholder="Your grandma is going to check your search history"
+                    placeholder="Search for collections"
                     onChange={handleKeywordChange}
                 />
             </div>
@@ -99,41 +57,45 @@ function Collections() {
                 <div className="w-full flex-1 flex justify-center items-center p-2">...</div>
             ) : (
                 <div className="w-full flex-1 flex flex-col gap-2 p-2 overflow-y-auto">
-                    {collections.filter(it => it.title.trim().toLowerCase().includes(keyword.trim().toLowerCase())).map(collection => {
-                        const { title, description, id, createdAt, totalQuizzes } = collection;
-                        return (
-                            <div
-                                key={id}
-                                className="text-left w-full px-4 py-2 border border-solid border-black cursor-pointer flex items-center justify-between"
-                                onClick={() => {
-                                    navigate(`/accounts/${accountId}/collections/${id}`);
-                                }}
-                            >
-                                <div>
-                                    <p>{title}</p>
-                                    <p className="text-sm">{description}</p>
-                                    <div className="flex items-center gap-1 mt-2">
-                                        <div className="px-2 py-1 border border-solid border-black text-sm">
-                                            {totalQuizzes} Items
-                                        </div>
-                                        <div className="px-2 py-1 border border-solid border-black text-sm">
-                                            {new Date(createdAt).toDateString()}
+                    {collections
+                        .filter(it =>
+                            it.title.trim().toLowerCase().includes(keyword.trim().toLowerCase())
+                        )
+                        .map(collection => {
+                            const { title, description, id, createdAt, totalQuizzes } = collection;
+                            return (
+                                <div
+                                    key={id}
+                                    className="text-left w-full px-4 py-2 border border-solid border-black cursor-pointer flex items-center justify-between"
+                                    onClick={() => {
+                                        navigate(`/accounts/${accountId}/collections/${id}`);
+                                    }}
+                                >
+                                    <div>
+                                        <p>{title}</p>
+                                        <p className="text-sm">{description}</p>
+                                        <div className="flex items-center gap-1 mt-2">
+                                            <div className="px-2 py-1 border border-solid border-black text-sm">
+                                                {totalQuizzes} Items
+                                            </div>
+                                            <div className="px-2 py-1 border border-solid border-black text-sm">
+                                                {new Date(createdAt).toDateString()}
+                                            </div>
                                         </div>
                                     </div>
+                                    <div className="flex items-center gap-2">
+                                        <Button
+                                            onClick={event => {
+                                                event.stopPropagation();
+                                                handleDeleteCollection(id);
+                                            }}
+                                        >
+                                            Remove
+                                        </Button>
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        onClick={event => {
-                                            event.stopPropagation();
-                                            handleDeleteCollection(id);
-                                        }}
-                                    >
-                                        Remove
-                                    </Button>
-                                </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
                 </div>
             )}
         </div>

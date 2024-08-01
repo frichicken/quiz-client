@@ -3,7 +3,7 @@ import Button from 'components/common/Button';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { debounce } from 'utils';
-import { FetchStatuses, QuizStatuses } from 'utils/constants';
+import { FetchStatuses, QuestionTypes, QuestionTypeTexts, QuizStatuses } from 'utils/constants';
 
 const QuizSettings = () => {
     const account = JSON.parse(localStorage.getItem('account'));
@@ -251,7 +251,8 @@ const QuizSettings = () => {
             },
             body: JSON.stringify({
                 id: question.id,
-                text: question.text
+                text: question.text,
+                type: question.type
             })
         })
             .then(response => {
@@ -271,16 +272,20 @@ const QuizSettings = () => {
     };
 
     // Handle answers
-    const handleCreateAnswer = questionId => {
+    const handleCreateAnswer = (questionId, questionType) => {
+        const answer = {
+            text: 'Answer'
+        };
+
+        if (questionType == QuestionTypes.Short) answer.isCorrect = true;
+
         fetch(`http://localhost:5184/api/questions/${questionId}/answers`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json'
             },
-            body: JSON.stringify({
-                text: 'Answer'
-            })
+            body: JSON.stringify(answer)
         })
             .then(response => {
                 if (response.ok) {
@@ -339,9 +344,18 @@ const QuizSettings = () => {
         hanldeUpdateAnswer(questionId, answer);
     }, 800);
 
-    const handleChooseCorrectAnswer = debounce((questionId, answerId) => {
+    const handleChooseCorrectAnswer = debounce((questionId, answerId, questionType) => {
         const question = quiz.questions.find(it => it.id == questionId);
         const answer = question.answers.find(it => it.id == answerId);
+
+        if (questionType == QuestionTypes.Single) {
+            const correctAnswers = question.answers.filter(it => it.isCorrect && it.id != answerId);
+            correctAnswers.forEach(answer => {
+                answer.isCorrect = false;
+            });
+
+            hanldeUpdateAnswers(questionId, correctAnswers);
+        }
 
         answer['isCorrect'] = answer['isCorrect'] ? false : true;
         const newAnswers = question.answers.map(it => {
@@ -377,6 +391,26 @@ const QuizSettings = () => {
                 Accept: 'application/json'
             },
             body: JSON.stringify(answer)
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response;
+                }
+
+                Promise.reject(response);
+            })
+            .catch(error => console.error(error))
+            .finally(() => {});
+    };
+
+    const hanldeUpdateAnswers = (questionId, answers) => {
+        fetch(`http://localhost:5184/api/questions/${questionId}/answers/update-multiple`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json'
+            },
+            body: JSON.stringify(answers)
         })
             .then(response => {
                 if (response.ok) {
@@ -439,8 +473,36 @@ const QuizSettings = () => {
             ...quiz,
             questions: newQuestions
         });
+    };
 
-        hanldeUpdateAnswer();
+    const handleSelectQuestionType = debounce((questionId, type) => {
+        const question = questions.find(it => it.id == questionId);
+
+        question.type = type;
+        question.answers.forEach(it => (it.isCorrect = false));
+
+        const newQuestions = questions.map(it => (it.id == questionId ? question : it));
+
+        setQuiz({
+            ...quiz,
+            questions: newQuestions
+        });
+
+        hanldeUpdateAnswers(questionId, question.answers);
+        handleUpdateQuestion(question);
+    });
+
+    const handleToggleQuestionTypeDropdown = questionId => {
+        const question = questions.find(it => it.id == questionId);
+
+        question.isQuestionTypeDropdownOpen = question.isQuestionTypeDropdownOpen ? false : true;
+
+        const newQuestions = questions.map(it => (it.id == questionId ? question : it));
+
+        setQuiz({
+            ...quiz,
+            questions: newQuestions
+        });
     };
 
     if (quizFetchStatuses.get == FetchStatuses.Loading)
@@ -453,7 +515,10 @@ const QuizSettings = () => {
                     <h2>{quizId ? 'Do whatever you want to this quiz' : 'Yes, another quiz'}</h2>
                     <div className="flex items-center gap-2">
                         {quiz.status == QuizStatuses.Draft && (
-                            <Button onClick={handlePublishQuiz}>
+                            <Button
+                                className="bg-black text-white hover:!bg-white hover:!text-black"
+                                onClick={handlePublishQuiz}
+                            >
                                 {quizFetchStatuses.publish == FetchStatuses.Loading
                                     ? 'Spining...'
                                     : 'Publish'}
@@ -505,7 +570,9 @@ const QuizSettings = () => {
                                     answers = [],
                                     text,
                                     id: questionId,
-                                    isChooseCorrectAnswerOpen
+                                    isChooseCorrectAnswerOpen,
+                                    isQuestionTypeDropdownOpen,
+                                    type
                                 } = question;
 
                                 return (
@@ -536,7 +603,7 @@ const QuizSettings = () => {
                                                     <>
                                                         <Button
                                                             onClick={() =>
-                                                                handleCreateAnswer(questionId)
+                                                                handleCreateAnswer(questionId, type)
                                                             }
                                                         >
                                                             Add answer
@@ -549,6 +616,43 @@ const QuizSettings = () => {
                                                         >
                                                             Remove
                                                         </Button>
+                                                        <div className="relative h-full flex items-center">
+                                                            <Button
+                                                                onClick={() =>
+                                                                    handleToggleQuestionTypeDropdown(
+                                                                        questionId
+                                                                    )
+                                                                }
+                                                            >
+                                                                {QuestionTypeTexts[type]}
+                                                            </Button>
+                                                            {isQuestionTypeDropdownOpen && (
+                                                                <div className="absolute top-[calc(100%+8px)] left-[0] bg-white min-w-40 shadow-sm py-2 border border-solid border-black flex flex-col z-10">
+                                                                    {Object.values(
+                                                                        QuestionTypes
+                                                                    ).map(value => {
+                                                                        return (
+                                                                            <Button
+                                                                                key={value}
+                                                                                className="w-full border-none text-left"
+                                                                                onClick={() => {
+                                                                                    handleSelectQuestionType(
+                                                                                        questionId,
+                                                                                        value
+                                                                                    );
+                                                                                }}
+                                                                            >
+                                                                                {
+                                                                                    QuestionTypeTexts[
+                                                                                        value
+                                                                                    ]
+                                                                                }
+                                                                            </Button>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            )}
+                                                        </div>
                                                     </>
                                                 )}
                                             </p>
@@ -576,7 +680,8 @@ const QuizSettings = () => {
                                                                     onClick={() =>
                                                                         handleChooseCorrectAnswer(
                                                                             questionId,
-                                                                            answerId
+                                                                            answerId,
+                                                                            type
                                                                         )
                                                                     }
                                                                 >
@@ -615,11 +720,14 @@ const QuizSettings = () => {
                                                                         }
                                                                         rows={1}
                                                                     />
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        checked={isCorrect}
-                                                                        name="isCorrect"
-                                                                    />
+                                                                    {type !=
+                                                                        QuestionTypes.Short && (
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={isCorrect}
+                                                                            name="isCorrect"
+                                                                        />
+                                                                    )}
                                                                     <Button
                                                                         className="flex-shrink-0"
                                                                         onClick={() =>
@@ -638,19 +746,21 @@ const QuizSettings = () => {
                                                 </>
                                             )}
                                         </div>
-                                        <div className="cursor-pointer px-4 py-2 gap-2 text-left flex items-center justify-between">
-                                            <Button
-                                                className="flex-1"
-                                                onClick={event => {
-                                                    event.stopPropagation();
-                                                    handleToggleChooseCorrectAnswer(questionId);
-                                                }}
-                                            >
-                                                {isChooseCorrectAnswerOpen
-                                                    ? 'Done'
-                                                    : 'Choose correct answers'}
-                                            </Button>
-                                        </div>
+                                        {type != QuestionTypes.Short && (
+                                            <div className="cursor-pointer px-4 py-2 gap-2 text-left flex items-center justify-between">
+                                                <Button
+                                                    className=""
+                                                    onClick={event => {
+                                                        event.stopPropagation();
+                                                        handleToggleChooseCorrectAnswer(questionId);
+                                                    }}
+                                                >
+                                                    {isChooseCorrectAnswerOpen
+                                                        ? 'Done'
+                                                        : 'Choose correct answers'}
+                                                </Button>
+                                            </div>
+                                        )}
                                     </div>
                                 );
                             })}

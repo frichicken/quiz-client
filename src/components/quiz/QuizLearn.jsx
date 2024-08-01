@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import Button from 'components/common/Button';
 import { useEffect, useState } from 'react';
 import { useOutletContext, useParams } from 'react-router-dom';
-import { FetchStatuses } from 'utils/constants';
+import { FetchStatuses, QuestionTypes } from 'utils/constants';
 
 function QuizLearn() {
     const { accountId, quizId } = useParams();
@@ -18,6 +18,7 @@ function QuizLearn() {
     const [chosenAnswerIds, setChosenAnswerIds] = useState([]);
     const [isSubmited, setIsSubmited] = useState(false);
     const [correctAnswers, setCorrectAnswers] = useState(0);
+    const [answerValue, setAnswerValue] = useState('');
 
     useEffect(() => {
         setFetchStatus(FetchStatuses.Loading);
@@ -41,27 +42,40 @@ function QuizLearn() {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
         setChosenAnswerIds([]);
         setIsSubmited(false);
+        setAnswerValue("");
     };
 
     const handleSubmit = () => {
         setIsSubmited(true);
 
         const question = quiz.questions[currentQuestionIndex];
-        const correctAnswersIds = question.answers.filter(it => it.isCorrect).map(it => it.id);
 
-        if (chosenAnswerIds.length != correctAnswersIds.length) return;
+        if (question.type == QuestionTypes.Short) {
+            if (question.answers.at(0).text == answerValue) setCorrectAnswers(correctAnswers + 1);
+        } else {
+            const correctAnswersIds = question.answers.filter(it => it.isCorrect).map(it => it.id);
 
-        if (chosenAnswerIds.every(it => correctAnswersIds.indexOf(it) != -1))
-            setCorrectAnswers(correctAnswers + 1);
+            if (chosenAnswerIds.length != correctAnswersIds.length) return;
+
+            if (chosenAnswerIds.every(it => correctAnswersIds.indexOf(it) != -1))
+                setCorrectAnswers(correctAnswers + 1);
+        }
     };
 
     const handleChooseAnswer = id => {
         let newChosenAnswerIds = [...chosenAnswerIds];
-        if (chosenAnswerIds.indexOf(id) != -1)
-            newChosenAnswerIds = chosenAnswerIds.filter(it => it != id);
+        const question = quiz.questions[currentQuestionIndex];
+
+        if (question.type == QuestionTypes.Single) newChosenAnswerIds = [];
+
+        if (newChosenAnswerIds.indexOf(id) != -1)
+            newChosenAnswerIds = newChosenAnswerIds.filter(it => it != id);
         else newChosenAnswerIds.push(id);
+
         setChosenAnswerIds(newChosenAnswerIds);
     };
+
+    const handleWriteAnswer = event => setAnswerValue(event.target.value);
 
     const handleTryAgain = () => {
         setCurrentQuestionIndex(0);
@@ -140,43 +154,73 @@ function QuizLearn() {
                                         {currentQuestionIndex + 1}/ {question.text}
                                     </p>
                                 </div>
-                                <div className="flex flex-col gap-2 mt-auto">
-                                    <p>Choose correct answer</p>
-                                    {question.answers.map(it => {
-                                        const { text, isCorrect, id } = it;
-
-                                        return (
+                                {question.type == QuestionTypes.Short ? (
+                                    <div className="flex flex-col gap-2 mt-auto">
+                                        {isSubmited ? (
                                             <Button
-                                                onClick={() => handleChooseAnswer(id)}
                                                 className={clsx(
                                                     'text-left',
-                                                    chosenAnswerIds.indexOf(id) != -1
-                                                        ? 'bg-black text-white'
-                                                        : '',
                                                     isSubmited &&
-                                                        chosenAnswerIds.indexOf(id) != -1 &&
-                                                        isCorrect
+                                                        question.answers.at(0).text == answerValue
                                                         ? 'bg-green-200 !text-black'
                                                         : '',
                                                     isSubmited &&
-                                                        chosenAnswerIds.indexOf(id) != -1 &&
-                                                        !isCorrect
+                                                        question.answers.at(0).text != answerValue
                                                         ? 'bg-red-300 !text-black'
-                                                        : '',
-                                                    isSubmited &&
-                                                        chosenAnswerIds.indexOf(id) == -1 &&
-                                                        isCorrect
-                                                        ? 'bg-gray-300 !text-black'
                                                         : ''
                                                 )}
-                                                key={id}
                                                 disabled={isSubmited}
                                             >
-                                                {text}
+                                                {question.answers.at(0).text}
                                             </Button>
-                                        );
-                                    })}
-                                </div>
+                                        ) : (
+                                            <input
+                                                className="flex-1 border border-solid border-black outline-none px-4 py-2"
+                                                placeholder="Type the answer"
+                                                value={answerValue}
+                                                onChange={handleWriteAnswer}
+                                            />
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col gap-2 mt-auto">
+                                        <p>Choose correct answer</p>
+                                        {question.answers.map(it => {
+                                            const { text, isCorrect, id } = it;
+
+                                            return (
+                                                <Button
+                                                    onClick={() => handleChooseAnswer(id)}
+                                                    className={clsx(
+                                                        'text-left',
+                                                        chosenAnswerIds.indexOf(id) != -1
+                                                            ? 'bg-black text-white'
+                                                            : '',
+                                                        isSubmited &&
+                                                            chosenAnswerIds.indexOf(id) != -1 &&
+                                                            isCorrect
+                                                            ? 'bg-green-200 !text-black'
+                                                            : '',
+                                                        isSubmited &&
+                                                            chosenAnswerIds.indexOf(id) != -1 &&
+                                                            !isCorrect
+                                                            ? 'bg-red-300 !text-black'
+                                                            : '',
+                                                        isSubmited &&
+                                                            chosenAnswerIds.indexOf(id) == -1 &&
+                                                            isCorrect
+                                                            ? 'bg-gray-300 !text-black'
+                                                            : ''
+                                                    )}
+                                                    key={id}
+                                                    disabled={isSubmited}
+                                                >
+                                                    {text}
+                                                </Button>
+                                            );
+                                        })}
+                                    </div>
+                                )}
                             </>
                         )}
                     </div>

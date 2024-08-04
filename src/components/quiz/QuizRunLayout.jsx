@@ -1,13 +1,67 @@
 import Button from 'components/common/Button';
-import { useState } from 'react';
-import { Outlet, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import QuizRunSettingsModal from './QuizRunSettingsModal';
+import { FetchStatuses, QuestionTypes } from 'utils/constants';
 
 function QuizRunLayout() {
+    const location = useLocation();
     const { accountId, quizId } = useParams();
     const navigate = useNavigate();
     const [isModeDropdownOpen, setIsModeDropdownOpen] = useState(false);
-    const [quizTitle, setQuizTitle] = useState('');
+    const [quiz, setQuiz] = useState({
+        title: '',
+        description: '',
+        status: null,
+        questions: []
+    });
     const toggleCreateDropdown = () => setIsModeDropdownOpen(isModeDropdownOpen ? false : true);
+    const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(true);
+    const [settings, setSettings] = useState({
+        max: 0,
+        include: Object.values(QuestionTypes)
+    });
+    const [fetchStatus, setFetchStatus] = useState(FetchStatuses.None);
+    const [max, setMax] = useState(0);
+
+    useEffect(() => {
+        setFetchStatus(FetchStatuses.Loading);
+        fetch(`http://localhost:5184/api/accounts/${accountId}/quizzes/${quizId}/details`)
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+
+                return Promise.reject(response);
+            })
+            .then(data => {
+                setQuiz(data);
+                setMax(data.questions.length);
+            })
+            .catch(error => console.error(error))
+            .finally(() => setFetchStatus(FetchStatuses.None));
+    }, [quizId, accountId, location]);
+
+    useEffect(() => {
+        setIsSettingsModalOpen(true);
+        setSettings({
+            max: 0,
+            include: Object.values(QuestionTypes)
+        });
+    }, [location]);
+
+    const handleSave = settings => {
+        setSettings(settings);
+        setIsSettingsModalOpen(false);
+    };
+
+    const questions = useMemo(
+        () =>
+            quiz.questions
+                .filter(it => settings.include.indexOf(it.type) != -1)
+                .slice(0, settings.max || max),
+        [settings, max, quiz.questions]
+    );
 
     return (
         <div className="w-full h-screen flex flex-col">
@@ -37,8 +91,16 @@ function QuizRunLayout() {
                         </div>
                     )}
                 </div>
-                <p className="mx-auto flex items-center justify-center">{quizTitle}</p>
-                <div className="flex items-center justify-center">
+                <p className="mx-auto flex items-center justify-center">{quiz.title}</p>
+                <div className="flex items-center justify-center gap-4">
+                    <Button
+                        onClick={event => {
+                            event.stopPropagation();
+                            setIsSettingsModalOpen(true);
+                        }}
+                    >
+                        Settings
+                    </Button>
                     <Button
                         onClick={event => {
                             event.stopPropagation();
@@ -49,7 +111,10 @@ function QuizRunLayout() {
                     </Button>
                 </div>
             </nav>
-            <Outlet context={{ setQuizTitle }} />
+            <Outlet context={{ questions, fetchStatus }} />
+            {isSettingsModalOpen && (
+                <QuizRunSettingsModal defaultSettings={settings} max={max} onSave={handleSave} />
+            )}
         </div>
     );
 }

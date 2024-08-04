@@ -1,62 +1,18 @@
 import clsx from 'clsx';
 import Button from 'components/common/Button';
 import { useEffect, useRef, useState } from 'react';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 import { FetchStatuses, QuestionTypes } from 'utils/constants';
 
 function QuizTest() {
-    const { accountId, quizId } = useParams();
-    const [quizFetchStatus, setQuizFetchStatus] = useState(FetchStatuses.None);
-    const [quiz, setQuiz] = useState({
-        title: '',
-        description: '',
-        status: null,
-        questions: []
-    });
+    const { questions, fetchStatus } = useOutletContext();
     const [questionsWithChosenAnswers, setQuestionsWithChosenAnswers] = useState([]);
     const [isCorrectAnswersShowed, setIsCorrectAnswerShowed] = useState(false);
-    const { setQuizTitle } = useOutletContext();
     const questionRefs = useRef([]);
 
     useEffect(() => {
-        setQuizFetchStatus(FetchStatuses.Loading);
-        fetch(`http://localhost:5184/api/accounts/${accountId}/quizzes/${quizId}/details`, {
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json'
-            }
-        })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                }
-
-                Promise.reject(response);
-            })
-            .then(data => {
-                setQuiz(data);
-                setQuizTitle(data.title);
-                const { questions } = data;
-
-                const questionsWithChosenAnswers = questions.map(question => {
-                    return {
-                        id: question.id,
-                        text: question.text,
-                        type: question.type,
-                        answers: question.answers.map(it => ({
-                            id: it.id,
-                            isCorrect: it.isCorrect,
-                            text: it.text,
-                            isChosen: false,
-                            value: ''
-                        }))
-                    };
-                });
-                setQuestionsWithChosenAnswers(questionsWithChosenAnswers);
-            })
-            .catch(error => console.error(error))
-            .finally(() => setQuizFetchStatus(FetchStatuses.None));
-    }, [accountId, quizId]);
+        handleTryAgain();
+    }, [questions]);
 
     const handleSelectAnswer = (questionId, answerId) => {
         const question = questionsWithChosenAnswers.find(it => it.id == questionId);
@@ -104,7 +60,7 @@ function QuizTest() {
 
     const handleTryAgain = () => {
         setIsCorrectAnswerShowed(false);
-        const questionsWithChosenAnswers = quiz.questions.map(question => {
+        const questionsWithChosenAnswers = questions.map(question => {
             return {
                 id: question.id,
                 text: question.text,
@@ -129,7 +85,7 @@ function QuizTest() {
         });
     };
 
-    if (quizFetchStatus == FetchStatuses.Loading)
+    if (fetchStatus == FetchStatuses.Loading)
         return <div className="w-full flex-1 flex justify-center items-center p-2">Spining...</div>;
 
     return (
@@ -150,7 +106,7 @@ function QuizTest() {
                     })}
                 </div>
             </div>
-            <div className='flex flex-col flex-1 items-center'>
+            <div className="flex flex-col flex-1 items-center">
                 <div className="flex-1 max-w-5xl w-full flex flex-col gap-8 p-4 overflow-y-auto">
                     {questionsWithChosenAnswers.map((question, index) => {
                         const { text, answers, id: questionId, type } = question;

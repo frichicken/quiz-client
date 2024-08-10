@@ -3,9 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { QuizStatuses } from 'utils/constants';
 
 export default function Quiz({
+    id,
     title,
     description,
-    id,
     totalQuestions,
     createdAt,
     status,

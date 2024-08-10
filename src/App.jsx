@@ -12,7 +12,7 @@ import QuizLearn from 'components/quiz/QuizLearn';
 import QuizRunLayout from 'components/quiz/QuizRunLayout';
 import QuizSettings from 'components/quiz/QuizSettings';
 import QuizTest from 'components/quiz/QuizTest';
-import Quizzes from 'components/quiz/Quizzes';
+import QuizList from 'components/quiz/QuizList';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './index.css';
 
@@ -43,7 +43,7 @@ function App() {
                     children: [
                         {
                             path: 'accounts/:accountId/quizzes',
-                            element: <Quizzes />
+                            element: <QuizList />
                         },
                         {
                             path: 'accounts/:accountId/collections',

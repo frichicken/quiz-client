@@ -1,16 +1,10 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import Button from './Button';
-import { useState } from 'react';
+import { Dropdown, DropdownContent, DropdownItem, DropdownTrigger } from './Dropdown';
+import Input from './Input';
 
 function RootLayout() {
     const account = JSON.parse(localStorage.getItem('account'));
-    const [isCreateDropdownOpen, setIsCreateDropdownOpen] = useState(false);
-    const [isYourLibraryDropdownOpen, setIsYourLibraryDropdownOpen] = useState(false);
     const navigate = useNavigate();
-
-    const toggleCreateDropdown = () => setIsCreateDropdownOpen(isCreateDropdownOpen ? false : true);
-    const toggleYourLibraryDropdown = () =>
-        setIsYourLibraryDropdownOpen(isYourLibraryDropdownOpen ? false : true);
 
     const handleCreateQuiz = () => {
         fetch(`http://localhost:5184/api/accounts/${account.id}/quizzes`, {
@@ -34,8 +28,7 @@ function RootLayout() {
             .then(data => {
                 navigate(`/accounts/${account.id}/quizzes/${data.id}/edit`);
             })
-            .catch(error => console.error(error))
-            .finally(() => toggleCreateDropdown());
+            .catch(error => console.error(error));
     };
 
     const handleCreateCollection = () => {
@@ -60,8 +53,7 @@ function RootLayout() {
             .then(data => {
                 navigate(`/accounts/${account.id}/collections/${data.id}`);
             })
-            .catch(error => console.error(error))
-            .finally(() => toggleCreateDropdown());
+            .catch(error => console.error(error));
     };
 
     return (
@@ -69,79 +61,51 @@ function RootLayout() {
             <nav className="flex justify-between gap-6 h-[67px] px-4 flex-shrink-0 self-start top-0 sticky w-full bg-white z-10">
                 <div className="flex items-center gap-5">
                     <Link className="hover:underline cursor-pointer">Home</Link>
-                    <div className="relative h-full flex items-center z-20">
-                        <p
-                            className="hover:underline cursor-pointer"
-                            onClick={toggleYourLibraryDropdown}
-                        >
+                    <Dropdown>
+                        <DropdownTrigger className="border-none hover:underline">
                             Your library
-                        </p>
-                        {isYourLibraryDropdownOpen && (
-                            <div className="absolute top-[calc(100%)] left-1/2 -translate-x-1/2 bg-white min-w-40 shadow-sm py-2 border border-solid border-neutral-600 flex flex-col">
-                                <Button
-                                    className="w-full border-none text-left"
-                                    onClick={() => {
-                                        navigate(`/accounts/${account.id}/quizzes`);
-                                        toggleYourLibraryDropdown();
-                                    }}
-                                >
-                                    Quiz
-                                </Button>
-                                <Button
-                                    className="w-full border-none text-left"
-                                    onClick={() => {
-                                        navigate(`/accounts/${account.id}/collections`);
-                                        toggleYourLibraryDropdown();
-                                    }}
-                                >
-                                    Collection
-                                </Button>
-                            </div>
-                        )}
-                    </div>
+                        </DropdownTrigger>
+                        <DropdownContent className="top-full">
+                            <DropdownItem
+                                onSelect={() => {
+                                    navigate(`/accounts/${account.id}/quizzes`);
+                                }}
+                            >
+                                Quiz
+                            </DropdownItem>
+                            <DropdownItem
+                                onSelect={() => {
+                                    navigate(`/accounts/${account.id}/collections`);
+                                }}
+                            >
+                                Collection
+                            </DropdownItem>
+                        </DropdownContent>
+                    </Dropdown>
                 </div>
                 <div className="flex items-center flex-1 mx-auto">
-                    <input
-                        className="border border-solid border-neutral-600 outline-none px-4 py-2 w-full"
+                    <Input
+                        className="border-neutral-600 w-full"
                         name="keyword"
                         placeholder="Search anything..."
                     />
                 </div>
                 <div className="flex items-center gap-5">
-                    <div className="relative h-full flex items-center">
-                        <p
-                            className="hover:underline cursor-pointer"
-                            onClick={toggleCreateDropdown}
-                        >
+                    <Dropdown position="bottom-center">
+                        <DropdownTrigger className="border-none hover:underline">
                             Create
-                        </p>
-                        {isCreateDropdownOpen && (
-                            <div className="absolute top-[calc(100%)] left-1/2 -translate-x-1/2 bg-white min-w-40 shadow-sm py-2 border border-solid border-black flex flex-col">
-                                <Button
-                                    className="w-full border-none text-left"
-                                    onClick={handleCreateQuiz}
-                                >
-                                    Quiz
-                                </Button>
-                                <Button
-                                    className="w-full border-none text-left"
-                                    onClick={handleCreateCollection}
-                                >
-                                    Collection
-                                </Button>
-                            </div>
-                        )}
-                    </div>
-                    <Link
-                        to="/settings"
-                        className="hover:underline cursor-pointer"
-                    >
+                        </DropdownTrigger>
+                        <DropdownContent className="top-full">
+                            <DropdownItem onSelect={handleCreateQuiz}>Quiz</DropdownItem>
+                            <DropdownItem onSelect={handleCreateCollection}>
+                                Collection
+                            </DropdownItem>
+                        </DropdownContent>
+                    </Dropdown>
+                    <Link to="/settings" className="hover:underline cursor-pointer">
                         Settings
                     </Link>
-                    <Link
-                        to="/terms-and-policies"
-                        className="hover:underline cursor-pointer"
-                    >
+                    <Link to="/terms-and-policies" className="hover:underline cursor-pointer">
                         Terms and policies
                     </Link>
                     <Link

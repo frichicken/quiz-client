@@ -4,6 +4,12 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { FetchStatuses, QuestionTabs, QuizStatuses, url } from 'utils/constants';
 import AddToCollectionModal from './AddToCollectionModal';
+import {
+    Dropdown,
+    DropdownContent,
+    DropdownItem,
+    DropdownTrigger
+} from 'components/common/Dropdown';
 
 const QuizDetails = () => {
     const { accountId, quizId } = useParams();
@@ -16,9 +22,8 @@ const QuizDetails = () => {
     });
     const [fetchStatus, setFetchStatus] = useState(FetchStatuses.None);
     const [areCorrectAnswersShowed, setAreCorrectAnswersShowed] = useState(false);
-    const [isMenuDropdownOpen, setIsMenuDropdown] = useState(false);
-    const [currentQuestionTab, setCurrentQuestionTab] = useState(QuestionTabs.All);
-    const [isAddToCollectionModalOpen, setIsAddToCollectionModalOpen] = useState(false);
+    const [tab, setTab] = useState(QuestionTabs.All);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         setFetchStatus(FetchStatuses.Loading);
@@ -84,11 +89,10 @@ const QuizDetails = () => {
 
                 Promise.reject(response);
             })
-            .catch(error => console.error(error))
-            .finally(() => toggleMenuDropdown());
+            .catch(error => console.error(error));
     };
 
-    const handleStarQuestion = id => {
+    const handleStar = id => {
         const { questions = [] } = quiz;
         const question = questions.find(it => it.id == id);
         question.isStarred = question.isStarred ? false : true;
@@ -118,21 +122,18 @@ const QuizDetails = () => {
             .catch(error => console.error(error));
     };
 
-    const handleChangeTab = value => setCurrentQuestionTab(value);
+    const handleSelectTab = value => setTab(value);
 
-    const handleOpenAddToCollectionModal = () => setIsAddToCollectionModalOpen(true);
+    const handleOpenModal = () => setIsModalOpen(true);
 
-    const handleCloseAddToCollectionModal = () => setIsAddToCollectionModalOpen(false);
-
-    const toggleMenuDropdown = () => setIsMenuDropdown(isMenuDropdownOpen ? false : true);
+    const handleCloseModal = () => setIsModalOpen(false);
 
     if (fetchStatus == FetchStatuses.Loading)
         return <div className="w-full flex-1 flex justify-center items-center p-4">Spining...</div>;
 
     const starredQuestions = quiz.questions.filter(it => it.isStarred);
 
-    const filteredQuestions =
-        currentQuestionTab == QuestionTabs.All ? quiz.questions : starredQuestions;
+    const filteredQuestions = tab == QuestionTabs.All ? quiz.questions : starredQuestions;
 
     return (
         <>
@@ -148,42 +149,23 @@ const QuizDetails = () => {
                             </p>
                             <p className="text-sm line-clamp-2">{quiz.description}</p>
                         </div>
-                        <div className="relative h-fit">
-                            <Button onClick={toggleMenuDropdown}>Menu</Button>
-                            {isMenuDropdownOpen && (
-                                <div className="absolute top-[calc(100%+8px)] right-0 bg-white min-w-40 shadow-sm py-2 border border-solid border-black flex flex-col">
-                                    <Link
-                                        className="w-full"
-                                        to={`/accounts/${accountId}/quizzes/${quizId}/edit`}
-                                    >
-                                        <Button className="w-full border-none text-left">
-                                            Edit
-                                        </Button>
-                                    </Link>
-                                    <Button
-                                        className="w-full border-none text-left"
-                                        onClick={handleRemove}
-                                    >
-                                        Remove
-                                    </Button>
-                                    <Button
-                                        onClick={handleSave}
-                                        className="w-full text-nowrap border-none text-left"
-                                    >
-                                        {quiz.isSaved ? 'Remove from saved' : 'Add to saved'}
-                                    </Button>
-                                    <Button
-                                        className="w-full border-none text-left"
-                                        onClick={() => {
-                                            toggleMenuDropdown();
-                                            handleOpenAddToCollectionModal();
-                                        }}
-                                    >
-                                        Add to collection
-                                    </Button>
-                                </div>
-                            )}
-                        </div>
+                        <Dropdown className="h-fit" position="bottom-right">
+                            <DropdownTrigger>
+                                <Button>Menu</Button>
+                            </DropdownTrigger>
+                            <DropdownContent className="top-full">
+                                <DropdownItem to={`/accounts/${accountId}/quizzes/${quizId}/edit`}>
+                                    Edit
+                                </DropdownItem>
+                                <DropdownItem onSelect={handleRemove}>Remove</DropdownItem>
+                                <DropdownItem onSelect={handleSave}>
+                                    {quiz.isSaved ? 'Remove from saved' : 'Add to saved'}
+                                </DropdownItem>
+                                <DropdownItem onSelect={handleOpenModal}>
+                                    Add to collection
+                                </DropdownItem>
+                            </DropdownContent>
+                        </Dropdown>
                     </div>
                     <div className="flex items-center gap-2 w-full">
                         <Link
@@ -204,20 +186,16 @@ const QuizDetails = () => {
                     <p>Questions in this quiz ({quiz.questions.length})</p>
                     <div className="flex items-center gap-2">
                         <Button
-                            className={clsx(
-                                currentQuestionTab == QuestionTabs.All ? 'bg-black text-white' : ''
-                            )}
-                            onClick={() => handleChangeTab(QuestionTabs.All)}
+                            className={clsx(tab == QuestionTabs.All ? 'bg-black text-white' : '')}
+                            onClick={() => handleSelectTab(QuestionTabs.All)}
                         >
                             All
                         </Button>
                         <Button
                             className={clsx(
-                                currentQuestionTab == QuestionTabs.Starred
-                                    ? 'bg-black text-white'
-                                    : ''
+                                tab == QuestionTabs.Starred ? 'bg-black text-white' : ''
                             )}
-                            onClick={() => handleChangeTab(QuestionTabs.Starred)}
+                            onClick={() => handleSelectTab(QuestionTabs.Starred)}
                         >
                             Starred ({starredQuestions.length})
                         </Button>
@@ -240,7 +218,7 @@ const QuizDetails = () => {
                                 <p className="flex items-center gap-2">
                                     {index + 1}/<p>{text}</p>
                                 </p>
-                                <Button onClick={() => handleStarQuestion(id)}>
+                                <Button onClick={() => handleStar(id)}>
                                     {isStarred ? 'Unstar' : 'Star'}
                                 </Button>
                             </div>
@@ -267,9 +245,7 @@ const QuizDetails = () => {
                     );
                 })}
             </div>
-            {isAddToCollectionModalOpen && (
-                <AddToCollectionModal onClose={handleCloseAddToCollectionModal} />
-            )}
+            {isModalOpen && <AddToCollectionModal onClose={handleCloseModal} />}
         </>
     );
 };

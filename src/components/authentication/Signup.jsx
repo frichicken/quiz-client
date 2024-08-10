@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FetchStatuses } from 'utils/constants';
 import useAuthentication from './useAuthentication';
+import Input from 'components/common/Input';
 
 const Signup = () => {
     const {
@@ -28,8 +29,7 @@ const Signup = () => {
                 <legend>Sign up</legend>
                 <label className="flex flex-col gap-2">
                     Email:
-                    <input
-                        className="border border-solid border-black outline-none px-4 py-2"
+                    <Input
                         name="email"
                         placeholder="We need your email, please"
                         onChange={handleChange}
@@ -41,14 +41,14 @@ const Signup = () => {
                 <label className="flex flex-col gap-2">
                     Password:
                     <div className="flex items-center gap-2">
-                        <input
-                            className="flex-1 border border-solid border-black outline-none px-4 py-2"
+                        <Input
                             name="password"
                             placeholder="It's our secret"
                             type={isPasswordVisible ? 'text' : 'password'}
                             onChange={handleChange}
                             value={account.password}
                             onFocus={handleFocus}
+                            className="flex-1"
                         />
                         <Button
                             type="button"
@@ -63,14 +63,14 @@ const Signup = () => {
                 <label className="flex flex-col gap-2">
                     Confirm password:
                     <div className="flex items-center gap-2">
-                        <input
-                            className="flex-1 border border-solid border-black outline-none px-4 py-2"
+                        <Input
                             name="confirmPassword"
                             placeholder="Are you sure they are matched"
                             type={isConfirmPasswordVisible ? 'text' : 'password'}
                             onChange={handleChange}
                             value={account.confirmPassword}
                             onFocus={handleFocus}
+                            className="flex-1"
                         />
                         <Button
                             type="button"

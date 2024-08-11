@@ -9,10 +9,10 @@ import Setttings from 'components/common/Setttings';
 import YourLibraryLayout from 'components/common/YourLibraryLayout';
 import QuizDetails from 'components/quiz/QuizDetails';
 import QuizLearn from 'components/quiz/QuizLearn';
+import QuizList from 'components/quiz/QuizList';
 import QuizRunLayout from 'components/quiz/QuizRunLayout';
 import QuizSettings from 'components/quiz/QuizSettings';
 import QuizTest from 'components/quiz/QuizTest';
-import QuizList from 'components/quiz/QuizList';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './index.css';
 
@@ -86,6 +86,7 @@ function App() {
             ]
         }
     ]);
+
     return <RouterProvider router={router} />;
 }
 

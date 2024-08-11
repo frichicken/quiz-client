@@ -87,11 +87,8 @@ function useAuthentication() {
                         Promise.reject(response);
                     }
                 })
-                .then(data => {
-                    console.log({ data });
-                    navigate('/log-in');
-                })
-                .catch(response => console.log(response))
+                .then(() => navigate('/log-in'))
+                .catch(() => toast('Something went wrong'))
                 .finally(() => setFetchStatus(FetchStatuses.None));
         } else {
             setErrors(errors);
@@ -143,11 +140,10 @@ function useAuthentication() {
                     }
                 })
                 .then(data => {
-                    console.log({ data });
                     localStorage.setItem('account', JSON.stringify(data));
                     navigate(`/accounts/${data.id}/quizzes`);
                 })
-                .catch(response => console.log(response))
+                .catch(() => toast('Something went wrong'))
                 .finally(() => setFetchStatus(FetchStatuses.None));
         } else {
             setErrors(errors);

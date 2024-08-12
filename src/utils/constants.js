@@ -16,9 +16,9 @@ export const FilterTypes = {
 };
 
 export const FilterTexts = {
+    [FilterTypes.Recent]: 'Recent',
     [FilterTypes.Draft]: 'Draft',
     [FilterTypes.Published]: 'Published',
-    [FilterTypes.Recent]: 'Recent',
     [FilterTypes.Saved]: 'Saved'
 };
 

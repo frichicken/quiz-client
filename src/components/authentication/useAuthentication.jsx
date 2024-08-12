@@ -1,3 +1,4 @@
+import { toast } from 'components/common/toaster';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FetchStatuses, url } from 'utils/constants';
@@ -83,9 +84,9 @@ function useAuthentication() {
                 .then(response => {
                     if (response.ok) {
                         return response.json();
-                    } else {
-                        Promise.reject(response);
                     }
+
+                    return Promise.reject(response);
                 })
                 .then(() => navigate('/log-in'))
                 .catch(() => toast('Something went wrong'))
@@ -135,9 +136,9 @@ function useAuthentication() {
                 .then(response => {
                     if (response.ok) {
                         return response.json();
-                    } else {
-                        Promise.reject(response);
                     }
+
+                    return Promise.reject(response);
                 })
                 .then(data => {
                     localStorage.setItem('account', JSON.stringify(data));

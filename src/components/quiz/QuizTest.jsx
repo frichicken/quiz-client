@@ -34,17 +34,9 @@ function QuizTest() {
         );
     };
 
-    const handleWriteAnswer = (questionId, answerId, value) => {
+    const handleWriteAnswer = (questionId, value) => {
         const question = questionsWithChosenAnswers.find(it => it.id == questionId);
-        const answer = question.answers.find(it => it.id == answerId);
-
-        answer.value = value;
-
-        question.answers = question.answers.map(it => {
-            if (it.id == answerId) return { ...answer };
-
-            return it;
-        });
+        question.answer = value;
 
         setQuestionsWithChosenAnswers(
             questionsWithChosenAnswers.map(it => {
@@ -109,7 +101,7 @@ function QuizTest() {
             <div className="flex flex-col flex-1 items-center">
                 <div className="flex-1 max-w-5xl w-full flex flex-col gap-8 p-4 overflow-y-auto">
                     {questionsWithChosenAnswers.map((question, index) => {
-                        const { text, answers, id: questionId, type } = question;
+                        const { text, answers, id: questionId, type, answer } = question;
 
                         return (
                             <div
@@ -122,6 +114,16 @@ function QuizTest() {
                                     {questionsWithChosenAnswers.length}
                                 </p>
                                 <p className="text-lg">{text}</p>
+                                {question.type == QuestionTypes.Short && isCorrectAnswersShowed && (
+                                    <div className="flex-1 flex flex-col gap-3 overflow-y-auto">
+                                        <p>Correct answers</p>
+                                        <div className="flex flex-col gap-4">
+                                            {answers.map(it => (
+                                                <p key={it.id}>{it.text}</p>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                                 <div className="flex flex-col gap-2 mt-auto">
                                     {type == QuestionTypes.Short ? (
                                         <>
@@ -129,26 +131,29 @@ function QuizTest() {
                                                 <Button
                                                     className={clsx(
                                                         'text-left',
-                                                        answers.at(0).text == answers.at(0).value
+                                                        question.answers.some(
+                                                            it => it.text == answer
+                                                        )
                                                             ? 'bg-green-200 !text-black'
                                                             : '',
-                                                        answers.at(0).text != answers.at(0).value
+                                                        question.answers.every(
+                                                            it => it.text != answer
+                                                        )
                                                             ? 'bg-red-300 !text-black'
                                                             : ''
                                                     )}
                                                     disabled={isCorrectAnswersShowed}
                                                 >
-                                                    {answers.at(0).text}
+                                                    {answer}
                                                 </Button>
                                             ) : (
                                                 <input
                                                     className="flex-1 border border-solid border-black outline-none px-4 py-2"
                                                     placeholder="Type the answer"
-                                                    value={answers.at(0).value}
+                                                    value={answer}
                                                     onChange={event =>
                                                         handleWriteAnswer(
                                                             questionId,
-                                                            answers.at(0).id,
                                                             event.target.value
                                                         )
                                                     }

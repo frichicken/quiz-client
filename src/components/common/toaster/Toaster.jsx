@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { set, remove } from './toaster';
+import { useEffect, useState } from 'react';
+import { remove, set } from '.';
 
 function Toaster() {
     const [toasts, setToasts] = useState([]);

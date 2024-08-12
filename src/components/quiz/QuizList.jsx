@@ -1,37 +1,48 @@
+import Button from 'components/common/Button';
 import {
     Dropdown,
     DropdownContent,
     DropdownItem,
     DropdownTrigger
 } from 'components/common/Dropdown';
+import Input from 'components/common/Input';
+import { toast } from 'components/common/toaster';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { FetchStatuses, FilterTexts, FilterTypes, QuizStatuses, url } from 'utils/constants';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { debounce } from 'utils';
+import { FetchStatuses, FilterTexts, FilterTypes, QuizStatuses } from 'utils/constants';
 import Quiz from './Quiz';
-import Button from 'components/common/Button';
 
 function QuizList() {
     const { accountId } = useParams();
     const [quizzes, setQuizzes] = useState([]);
     const [fetchStatus, setFetchStatus] = useState(FetchStatuses.None);
-    const [filter, setFilter] = useState(FilterTypes.Recent);
-    const [keyword, setKeyword] = useState('');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [filter, setFilter] = useState(searchParams.get('filter') || FilterTypes.Recent);
+    const [keyword, setKeyword] = useState(searchParams.get('keyword') || '');
 
     useEffect(() => {
+        const url = new URL(`http://localhost:5184/api/accounts/${accountId}/quizzes`);
+        url.search = searchParams;
+
+        setQuizzes([]);
         setFetchStatus(FetchStatuses.Loading);
-        fetch(`${url}/api/accounts/${accountId}/quizzes`)
-            .then(response => response.json())
+        fetch(url.toString())
+            .then(response => {
+                if (response.ok) return response.json();
+                else return Promise.reject(response);
+            })
             .then(data => setQuizzes(data))
-            .catch(error => console.error(error))
+            .catch(() => toast('Something went wrong'))
             .finally(() => setFetchStatus(FetchStatuses.None));
-    }, [accountId]);
+    }, [accountId, searchParams]);
 
     const handleRemove = id => {
         const quiz = quizzes.find(it => it.id == id);
         quiz.fetchStatus = FetchStatuses.Loading;
         setQuizzes(quizzes.map(it => (it.id == id ? quiz : it)));
 
-        fetch(`${url}/api/accounts/${accountId}/quizzes/${id}`, {
+        fetch(`http://localhost:5184/api/accounts/${accountId}/quizzes/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -52,7 +63,7 @@ function QuizList() {
         const quiz = quizzes.find(it => it.id == id);
         quiz.isSaved = quiz.isSaved ? false : true;
 
-        fetch(`${url}/api/accounts/${accountId}/quizzes/${id}`, {
+        fetch(`http://localhost:5184/api/accounts/${accountId}/quizzes/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -78,27 +89,23 @@ function QuizList() {
             .catch(error => console.error(error));
     };
 
-    const handleSearch = event => {
+    const handleSearch = debounce(event => {
+        searchParams.set('keyword', event.target.value);
+        setSearchParams(new URLSearchParams(searchParams));
+
         setKeyword(event.target.value);
-    };
+    }, 200);
 
-    const handleFilter = value => {
+    const handleFilter = debounce(value => {
+        searchParams.set('filter', value);
+        setSearchParams(new URLSearchParams(searchParams));
+
         setFilter(value);
-    };
+    }, 200);
 
-    const draft = quizzes.filter(
-        it =>
-            it.status == QuizStatuses.Draft &&
-            it.title.toLowerCase().trim().includes(keyword.toLowerCase().trim())
-    );
+    const draft = quizzes.filter(it => it.status == QuizStatuses.Draft);
 
-    let published = quizzes.filter(
-        it =>
-            it.status == QuizStatuses.Published &&
-            it.title.toLowerCase().trim().includes(keyword.toLowerCase().trim())
-    );
-
-    if (filter == FilterTypes.Saved) published = quizzes.filter(it => it.isSaved);
+    let published = quizzes.filter(it => it.status == QuizStatuses.Published);
 
     let content = (
         <>
@@ -163,11 +170,12 @@ function QuizList() {
                         })}
                     </DropdownContent>
                 </Dropdown>
-                <input
-                    className="border border-solid border-black outline-none px-4 py-2 min-w-[28rem]"
+                <Input
+                    className="min-w-[28rem]"
                     name="keyword"
                     placeholder="Search for quizzes"
                     onChange={handleSearch}
+                    defaultValue={keyword}
                 />
             </div>
             <div className="flex flex-col flex-1 gap-2 w-full overflow-y-auto">{content}</div>

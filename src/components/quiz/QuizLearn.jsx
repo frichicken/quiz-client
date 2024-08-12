@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import Button from 'components/common/Button';
+import Input from 'components/common/Input';
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { FetchStatuses, QuestionTypes } from 'utils/constants';
@@ -25,11 +26,11 @@ function QuizLearn() {
 
     const handleSubmit = () => {
         setIsSubmited(true);
-
         const question = questions[currentQuestionIndex];
 
         if (question.type == QuestionTypes.Short) {
-            if (question.answers.at(0).text == answerValue) setCorrectAnswers(correctAnswers + 1);
+            if (question.answers.some(it => it.text == answerValue))
+                setCorrectAnswers(correctAnswers + 1);
         } else {
             const correctAnswersIds = question.answers.filter(it => it.isCorrect).map(it => it.id);
 
@@ -134,28 +135,40 @@ function QuizLearn() {
                                         {currentQuestionIndex + 1}/ {question.text}
                                     </p>
                                 </div>
+                                {question.type == QuestionTypes.Short && isSubmited && (
+                                    <div className="flex-1 flex flex-col gap-3 overflow-y-auto">
+                                        <p>Correct answers</p>
+                                        <div className="flex flex-col gap-4">
+                                            {question.answers.map(it => (
+                                                <p key={it.id}>{it.text}</p>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                                 {question.type == QuestionTypes.Short ? (
                                     <div className="flex flex-col gap-2 mt-auto">
                                         {isSubmited ? (
                                             <Button
                                                 className={clsx(
                                                     'text-left',
-                                                    isSubmited &&
-                                                        question.answers.at(0).text == answerValue
+                                                    question.answers.some(
+                                                        it => it.text == answerValue
+                                                    )
                                                         ? 'bg-green-200 !text-black'
                                                         : '',
-                                                    isSubmited &&
-                                                        question.answers.at(0).text != answerValue
+                                                    question.answers.every(
+                                                        it => it.text != answerValue
+                                                    )
                                                         ? 'bg-red-300 !text-black'
                                                         : ''
                                                 )}
                                                 disabled={isSubmited}
                                             >
-                                                {question.answers.at(0).text}
+                                                {answerValue}
                                             </Button>
                                         ) : (
-                                            <input
-                                                className="flex-1 border border-solid border-black outline-none px-4 py-2"
+                                            <Input
+                                                className="flex-1"
                                                 placeholder="Type the answer"
                                                 value={answerValue}
                                                 onChange={handleWriteAnswer}

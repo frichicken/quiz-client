@@ -62,7 +62,7 @@ export function DropdownTrigger({ children, className }) {
     const { isOpen, setIsOpen } = context;
 
     return (
-        <button className={className} onClick={() => (isOpen ? setIsOpen(false) : setIsOpen(true))}>{children}</button>
+        <div className={clsx("cursor-pointer", className)} onClick={() => (isOpen ? setIsOpen(false) : setIsOpen(true))}>{children}</div>
     );
 }
 

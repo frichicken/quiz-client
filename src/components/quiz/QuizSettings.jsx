@@ -1,5 +1,12 @@
 import clsx from 'clsx';
 import Button from 'components/common/Button';
+import {
+    Dropdown,
+    DropdownContent,
+    DropdownItem,
+    DropdownTrigger
+} from 'components/common/Dropdown';
+import Input from 'components/common/Input';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { debounce } from 'utils';
@@ -492,19 +499,6 @@ const QuizSettings = () => {
         handleUpdateQuestion(question);
     });
 
-    const handleToggleQuestionTypeDropdown = questionId => {
-        const question = questions.find(it => it.id == questionId);
-
-        question.isQuestionTypeDropdownOpen = question.isQuestionTypeDropdownOpen ? false : true;
-
-        const newQuestions = questions.map(it => (it.id == questionId ? question : it));
-
-        setQuiz({
-            ...quiz,
-            questions: newQuestions
-        });
-    };
-
     if (quizFetchStatuses.get == FetchStatuses.Loading)
         return <div className="w-full h-full flex justify-center items-center p-4">Spining...</div>;
 
@@ -531,8 +525,7 @@ const QuizSettings = () => {
                     <div className="flex flex-col gap-4 p-4">
                         <label className="flex flex-col gap-2">
                             Title:
-                            <input
-                                className="border border-solid border-black outline-none px-4 py-2"
+                            <Input
                                 name="title"
                                 placeholder="Titled this quiz, please"
                                 defaultValue={quiz.title}
@@ -571,7 +564,6 @@ const QuizSettings = () => {
                                     text,
                                     id: questionId,
                                     isChooseCorrectAnswerOpen,
-                                    isQuestionTypeDropdownOpen,
                                     type
                                 } = question;
 
@@ -616,26 +608,19 @@ const QuizSettings = () => {
                                                         >
                                                             Remove
                                                         </Button>
-                                                        <div className="relative h-full flex items-center">
-                                                            <Button
-                                                                onClick={() =>
-                                                                    handleToggleQuestionTypeDropdown(
-                                                                        questionId
-                                                                    )
-                                                                }
-                                                            >
-                                                                {QuestionTypeTexts[type]}
-                                                            </Button>
-                                                            {isQuestionTypeDropdownOpen && (
-                                                                <div className="absolute top-[calc(100%+8px)] left-[0] bg-white min-w-40 shadow-sm py-2 border border-solid border-black flex flex-col z-10">
-                                                                    {Object.values(
-                                                                        QuestionTypes
-                                                                    ).map(value => {
+                                                        <Dropdown>
+                                                            <DropdownTrigger>
+                                                                <Button>
+                                                                    {QuestionTypeTexts[type]}
+                                                                </Button>
+                                                            </DropdownTrigger>
+                                                            <DropdownContent>
+                                                                {Object.values(QuestionTypes).map(
+                                                                    value => {
                                                                         return (
-                                                                            <Button
+                                                                            <DropdownItem
                                                                                 key={value}
-                                                                                className="w-full border-none text-left"
-                                                                                onClick={() => {
+                                                                                onSelect={() => {
                                                                                     handleSelectQuestionType(
                                                                                         questionId,
                                                                                         value
@@ -647,12 +632,12 @@ const QuizSettings = () => {
                                                                                         value
                                                                                     ]
                                                                                 }
-                                                                            </Button>
+                                                                            </DropdownItem>
                                                                         );
-                                                                    })}
-                                                                </div>
-                                                            )}
-                                                        </div>
+                                                                    }
+                                                                )}
+                                                            </DropdownContent>
+                                                        </Dropdown>
                                                     </>
                                                 )}
                                             </p>

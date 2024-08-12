@@ -12,7 +12,7 @@ const Button = ({ children, className, onClick, type, disabled, ...others }) => 
             type={type}
             disabled={disabled}
         >
-            {children}
+            {children || <p className='h-5'></p>}
         </button>
     );
 };

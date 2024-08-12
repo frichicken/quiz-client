@@ -1,21 +1,25 @@
 import Button from 'components/common/Button';
+import {
+    Dropdown,
+    DropdownContent,
+    DropdownItem,
+    DropdownTrigger
+} from 'components/common/Dropdown';
 import { useEffect, useMemo, useState } from 'react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
-import QuizRunSettingsModal from './QuizRunSettingsModal';
 import { FetchStatuses, QuestionTypes } from 'utils/constants';
+import QuizRunSettingsModal from './QuizRunSettingsModal';
 
 function QuizRunLayout() {
     const location = useLocation();
     const { accountId, quizId } = useParams();
     const navigate = useNavigate();
-    const [isModeDropdownOpen, setIsModeDropdownOpen] = useState(false);
     const [quiz, setQuiz] = useState({
         title: '',
         description: '',
         status: null,
         questions: []
     });
-    const toggleCreateDropdown = () => setIsModeDropdownOpen(isModeDropdownOpen ? false : true);
     const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(true);
     const [settings, setSettings] = useState({
         max: 0,
@@ -66,31 +70,27 @@ function QuizRunLayout() {
     return (
         <div className="w-full h-screen flex flex-col">
             <nav className="flex justify-between border-b border-b-black gap-6 h-[67px] px-4 flex-shrink-0 self-start top-0 sticky w-full bg-white z-10">
-                <div className="relative h-full flex items-center">
-                    <Button onClick={toggleCreateDropdown}>Mode</Button>
-                    {isModeDropdownOpen && (
-                        <div className="absolute top-[calc(100%+8px)] left-0 bg-white min-w-40 shadow-sm py-2 border border-solid border-black flex flex-col">
-                            <Button
-                                className="w-full border-none text-left"
-                                onClick={() => {
+                <Dropdown>
+                    <DropdownTrigger>
+                        <Button>Mode</Button>
+                        <DropdownContent>
+                            <DropdownItem
+                                onSelect={() => {
                                     navigate(`/accounts/${accountId}/quizzes/${quizId}/learn`);
-                                    toggleCreateDropdown();
                                 }}
                             >
                                 Learn
-                            </Button>
-                            <Button
-                                className="w-full border-none text-left"
-                                onClick={() => {
+                            </DropdownItem>
+                            <DropdownItem
+                                onSelect={() => {
                                     navigate(`/accounts/${accountId}/quizzes/${quizId}/test`);
-                                    toggleCreateDropdown();
                                 }}
                             >
                                 Test
-                            </Button>
-                        </div>
-                    )}
-                </div>
+                            </DropdownItem>
+                        </DropdownContent>
+                    </DropdownTrigger>
+                </Dropdown>
                 <p className="mx-auto flex items-center justify-center">{quiz.title}</p>
                 <div className="flex items-center justify-center gap-4">
                     <Button

@@ -15,6 +15,7 @@ import QuizSettings from 'components/quiz/QuizSettings';
 import QuizTest from 'components/quiz/QuizTest';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './index.css';
+import Home from 'components/common/Home';
 
 function App() {
     const router = createBrowserRouter([
@@ -65,6 +66,10 @@ function App() {
                 {
                     path: 'accounts/:accountId/collections',
                     children: [{ path: ':collectionId', element: <CollectionDetails /> }]
+                },
+                {
+                    path: '/home',
+                    element: <Home />
                 }
             ]
         },

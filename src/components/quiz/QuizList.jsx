@@ -79,7 +79,9 @@ function QuizList() {
         })
             .then(response => {
                 if (response.ok) {
-                    setQuizzes(quizzes.map(it => (it.id == id ? quiz : it)));
+                    if (filter == FilterTypes.Saved && quiz.isSaved == false) {
+                        setQuizzes(quizzes.filter(it => it.id != id));
+                    } else setQuizzes(quizzes.map(it => (it.id == id ? quiz : it)));
 
                     return response;
                 }

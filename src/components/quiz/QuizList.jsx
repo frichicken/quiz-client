@@ -63,19 +63,13 @@ function QuizList() {
         const quiz = quizzes.find(it => it.id == id);
         quiz.isSaved = quiz.isSaved ? false : true;
 
-        fetch(`http://localhost:5184/api/accounts/${accountId}/quizzes/${id}`, {
+        fetch(`http://localhost:5184/api/accounts/${accountId}/quizzes/${id}/handle-save`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json'
             },
-            body: JSON.stringify({
-                id,
-                title: quiz.title,
-                description: quiz.description,
-                status: quiz.status,
-                isSaved: quiz.isSaved
-            })
+            body: JSON.stringify(quiz.isSaved)
         })
             .then(response => {
                 if (response.ok) {

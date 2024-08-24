@@ -30,7 +30,7 @@ function QuizRunLayout() {
 
     useEffect(() => {
         setFetchStatus(FetchStatuses.Loading);
-        fetch(`http://localhost:5184/api/accounts/${accountId}/quizzes/${quizId}/details`)
+        fetch(`http://localhost:5184/api/accounts/${accountId}/quizzes/${quizId}`)
             .then(response => {
                 if (response.ok) {
                     return response.json();

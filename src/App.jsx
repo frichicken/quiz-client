@@ -57,11 +57,12 @@ function App() {
                     element: <Setttings />
                 },
                 {
-                    path: 'accounts/:accountId/quizzes',
-                    children: [
-                        { path: ':quizId', element: <QuizDetails /> },
-                        { path: ':quizId/edit', element: <QuizSettings /> }
-                    ]
+                    path: 'accounts/:accountId/quizzes/:quizId/edit',
+                    element: <QuizSettings />
+                },
+                {
+                    path: 'accounts/:createdBy/quizzes/:quizId/qa/:accountId',
+                    element: <QuizDetails />
                 },
                 {
                     path: 'accounts/:accountId/collections',

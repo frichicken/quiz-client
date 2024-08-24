@@ -1,18 +1,18 @@
 import clsx from 'clsx';
 import Button from 'components/common/Button';
-import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { FetchStatuses, QuestionTabs, QuizStatuses, url } from 'utils/constants';
-import AddToCollectionModal from './AddToCollectionModal';
 import {
     Dropdown,
     DropdownContent,
     DropdownItem,
     DropdownTrigger
 } from 'components/common/Dropdown';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { FetchStatuses, QuestionTabs, QuizStatuses, url } from 'utils/constants';
+import AddToCollectionModal from './AddToCollectionModal';
 
 const QuizDetails = () => {
-    const { accountId, quizId } = useParams();
+    const { accountId, quizId, createdBy } = useParams();
     const navigate = useNavigate();
     const [quiz, setQuiz] = useState({
         title: '',
@@ -27,7 +27,8 @@ const QuizDetails = () => {
 
     useEffect(() => {
         setFetchStatus(FetchStatuses.Loading);
-        fetch(`${url}/api/accounts/${accountId}/quizzes/${quizId}/details`, {
+
+        fetch(`http://localhost:5184/api/accounts/${createdBy}/quizzes/${quizId}/qa/${accountId}`, {
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json'

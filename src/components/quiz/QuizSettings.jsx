@@ -35,7 +35,7 @@ const QuizSettings = () => {
             ...quizFetchStatuses,
             get: FetchStatuses.Loading
         });
-        fetch(`http://localhost:5184/api/accounts/${account.id}/quizzes/${quizId}/details`, {
+        fetch(`http://localhost:5184/api/accounts/${account.id}/quizzes/${quizId}`, {
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json'
@@ -154,7 +154,7 @@ const QuizSettings = () => {
             ...questionFetchStatuses,
             create: FetchStatuses.Loading
         });
-        fetch(`http://localhost:5184/api/quizzes/${quizId}/questions`, {
+        fetch(`http://localhost:5184/api/accounts/${account.id}/quizzes/${quizId}/questions`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -506,13 +506,10 @@ const QuizSettings = () => {
         <div className="flex-1 overflow-y-auto">
             <div className="max-w-7xl w-full mx-auto p-4">
                 <div className="flex items-center justify-between">
-                    <h2>{quizId ? 'Do whatever you want to this quiz' : 'Yes, another quiz'}</h2>
+                    <h2>Do whatever you want to this quiz</h2>
                     <div className="flex items-center gap-2">
                         {quiz.status == QuizStatuses.Draft && (
-                            <Button
-                                className="bg-black text-white hover:!bg-white hover:!text-black"
-                                onClick={handlePublishQuiz}
-                            >
+                            <Button onClick={handlePublishQuiz}>
                                 {quizFetchStatuses.publish == FetchStatuses.Loading
                                     ? 'Spining...'
                                     : 'Publish'}

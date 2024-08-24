@@ -11,6 +11,7 @@ export default function Quiz({
     status,
     isSaved,
     onRemove,
+    createdBy,
     onSave
 }) {
     const navigate = useNavigate();
@@ -22,7 +23,7 @@ export default function Quiz({
             onClick={() => {
                 status == QuizStatuses.Draft
                     ? navigate(`/accounts/${accountId}/quizzes/${id}/edit`)
-                    : navigate(`/accounts/${accountId}/quizzes/${id}`);
+                    : navigate(`/accounts/${createdBy.id}/quizzes/${id}/qa/${accountId}`);
             }}
         >
             <div className="flex-1 w-full">
@@ -39,6 +40,9 @@ export default function Quiz({
                         {status == QuizStatuses.Draft ? 'Draft' : 'Published'}
                     </div>
                 </div>
+                <div className="px-2 py-1 border border-solid border-black text-sm w-fit flex-shrink-0 mt-2">
+                    Created by {createdBy.email}
+                </div>
             </div>
             <div className="flex w-full items-center gap-2 flex-shrink-0">
                 {status == QuizStatuses.Published && (
@@ -46,7 +50,7 @@ export default function Quiz({
                         <Button
                             onClick={event => {
                                 event.stopPropagation();
-                                navigate(`/accounts/${accountId}/quizzes/${id}/learn`);
+                                navigate(`/accounts/${createdBy.id}/quizzes/${id}/learn`);
                             }}
                         >
                             Learn
@@ -54,22 +58,24 @@ export default function Quiz({
                         <Button
                             onClick={event => {
                                 event.stopPropagation();
-                                navigate(`/accounts/${accountId}/quizzes/${id}/test`);
+                                navigate(`/accounts/${createdBy.id}/quizzes/${id}/test`);
                             }}
                         >
                             Test
                         </Button>
                     </>
                 )}
-                <Button
-                    onClick={event => {
-                        event.stopPropagation();
-                        navigate(`/accounts/${accountId}/quizzes/${id}/edit`);
-                    }}
-                    className="text-nowrap"
-                >
-                    Edit
-                </Button>
+                {accountId == createdBy.id && (
+                    <Button
+                        onClick={event => {
+                            event.stopPropagation();
+                            navigate(`/accounts/${createdBy.id}/quizzes/${id}/edit`);
+                        }}
+                        className="text-nowrap"
+                    >
+                        Edit
+                    </Button>
+                )}
                 <Button
                     onClick={event => {
                         event.stopPropagation();

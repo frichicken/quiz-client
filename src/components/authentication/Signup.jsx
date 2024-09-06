@@ -29,7 +29,7 @@ const Signup = () => {
                 <p className="text-2xl font-medium">Sign up</p>
                 <div className='flex flex-col gap-4'>
                     <label className="flex flex-col gap-2">
-                        Email:
+                        Email*
                         <Input
                             name="email"
                             placeholder="We need your email, please"
@@ -37,10 +37,10 @@ const Signup = () => {
                             value={account.email}
                             onFocus={handleFocus}
                         />
-                        <p className="text-sm text-red-400">{errors.email}</p>
+                        <p className="text-sm text-red-600">{errors.email}</p>
                     </label>
                     <label className="flex flex-col gap-2">
-                        Password:
+                        Password*
                         <div className="flex items-center gap-2">
                             <Input
                                 name="password"
@@ -59,10 +59,10 @@ const Signup = () => {
                                 {isPasswordVisible ? 'Hide password' : 'Show password'}
                             </Button>
                         </div>
-                        <p className="text-sm text-red-400">{errors.password}</p>
+                        <p className="text-sm text-red-600">{errors.password}</p>
                     </label>
                     <label className="flex flex-col gap-2">
-                        Confirm password:
+                        Confirm password*
                         <div className="flex items-center gap-2">
                             <Input
                                 name="confirmPassword"
@@ -81,7 +81,7 @@ const Signup = () => {
                                 {isConfirmPasswordVisible ? 'Hide password' : 'Show password'}
                             </Button>
                         </div>
-                        <p className="text-sm text-red-400">{errors.confirmPassword}</p>
+                        <p className="text-sm text-red-600">{errors.confirmPassword}</p>
                     </label>
                     <Button className="bg-black text-white" type="submit">
                         {fetchStatus == FetchStatuses.Loading ? '...' : 'Sign up'}

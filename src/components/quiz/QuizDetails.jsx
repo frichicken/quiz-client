@@ -28,7 +28,7 @@ const QuizDetails = () => {
     useEffect(() => {
         setFetchStatus(FetchStatuses.Loading);
 
-        fetch(`http://localhost:5184/api/accounts/${createdBy}/quizzes/${quizId}/qa/${accountId}`, {
+        fetch(`http://localhost:5184/api/accounts/${createdBy}/quizzes/${quizId}/current-account/${accountId}`, {
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json'

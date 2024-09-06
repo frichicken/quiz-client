@@ -7,6 +7,7 @@ import {
     DropdownTrigger
 } from 'components/common/Dropdown';
 import Input from 'components/common/Input';
+import { toast } from 'components/common/toaster';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { debounce } from 'utils';
@@ -187,6 +188,11 @@ const QuizSettings = () => {
     };
 
     const handleDeleteQuestion = id => {
+        if (quiz.questions.length < 2) {
+            toast('You must have at least on question');
+            return;
+        }
+        
         setQuestionFetchStatuses({
             ...questionFetchStatuses,
             delete: FetchStatuses.Loading
@@ -433,6 +439,11 @@ const QuizSettings = () => {
     const hanldeDeleteAnswer = (questionId, answerId) => {
         const question = quiz.questions.find(it => it.id == questionId);
 
+        if (question.answers.length < 2) {
+            toast('You must have at least one answer');
+            return;
+        }
+
         fetch(`http://localhost:5184/api/questions/${questionId}/answers/${answerId}`, {
             method: 'DELETE',
             headers: {
@@ -461,7 +472,7 @@ const QuizSettings = () => {
                     });
                 }
 
-                Promise.reject(response);
+                return Promise.reject(response);
             })
             .catch(error => console.error(error))
             .finally(() => {});
@@ -537,6 +548,7 @@ const QuizSettings = () => {
                                 placeholder="Give it some descriptive words"
                                 defaultValue={quiz.description}
                                 onChange={handleInputQuiz}
+                                rows={6}
                             />
                         </label>
                     </div>

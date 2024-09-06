@@ -27,7 +27,7 @@ function Login() {
                 <p className="text-2xl font-medium">Log in</p>
                 <div className="flex flex-col gap-4">
                     <label className="flex flex-col gap-2">
-                        Email:
+                        Email or username* 
                         <Input
                             name="email"
                             placeholder="Type your email"
@@ -35,10 +35,10 @@ function Login() {
                             onFocus={handleFocus}
                             value={account.email}
                         />
-                        <p className="text-sm text-red-400">{errors.email}</p>
+                        <p className="text-sm text-red-600">{errors.email}</p>
                     </label>
                     <label className="flex flex-col gap-2">
-                        Password:
+                        Password*
                         <div className="flex items-center gap-2">
                             <Input
                                 placeholder="Let me know, i will give an ice cream"
@@ -57,7 +57,7 @@ function Login() {
                                 {isPasswordVisible ? 'Hide password' : 'Show password'}
                             </Button>
                         </div>
-                        <p className="text-sm text-red-400">{errors.password}</p>
+                        <p className="text-sm text-red-600">{errors.password}</p>
                     </label>
                     {/* <div className="flex justify-between">
                         <label className="flex items-center gap-2">
